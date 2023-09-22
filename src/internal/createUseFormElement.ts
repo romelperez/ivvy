@@ -38,7 +38,8 @@ const createUseFormElement = <Data extends Record<string, unknown>>(
         )
         if (firstErrorElement) {
           firstErrorElement.focus?.()
-          firstErrorElement.scrollIntoView?.({ block: 'center', behavior: 'instant' })
+          // Unknown type error.
+          firstErrorElement.scrollIntoView?.({ block: 'center', behavior: 'instant' as any })
         }
       }
     }

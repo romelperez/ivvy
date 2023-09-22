@@ -1,12 +1,12 @@
 import { test, expect } from 'vitest'
-import { createTranslator } from '../'
+import { createIvvyTranslator } from '../'
 
 test('Should get basic translation of defined locale', () => {
   type Definition = {
     x: undefined
     y: undefined
   }
-  const t = createTranslator<Definition>({
+  const t = createIvvyTranslator<Definition>({
     locale: 'en',
     translations: {
       en: {
@@ -24,7 +24,7 @@ test('Should get basic translation and interpolate variables of defined locale',
     x: undefined
     y: [{ a: number, b: string }]
   }
-  const t = createTranslator<Definition>({
+  const t = createIvvyTranslator<Definition>({
     locale: 'en',
     translations: {
       en: {
@@ -39,7 +39,8 @@ test('Should get basic translation and interpolate variables of defined locale',
     t('x', { a: 1, b: '2' })
     // @ts-expect-error test
     t('y', { b: 2 })
-  } catch (err) {}
+  }
+  catch (err) {}
 })
 
 test('Should get nested translation of defined locale', () => {
@@ -49,7 +50,7 @@ test('Should get nested translation of defined locale', () => {
       i: undefined
     }
   }
-  const t = createTranslator<Definition>({
+  const t = createIvvyTranslator<Definition>({
     locale: 'en',
     translations: {
       en: {
@@ -71,7 +72,7 @@ test('Should interpolate defined variables for a specific nested translation', (
       b: [{ name: string, age: number }]
     }
   }
-  const t = createTranslator<Definition>({
+  const t = createIvvyTranslator<Definition>({
     locale: 'en',
     translations: {
       en: {
@@ -92,7 +93,7 @@ test('Should get default locale translation if no provided locale translation is
       a: undefined
     }
   }
-  const t = createTranslator<Definition>({
+  const t = createIvvyTranslator<Definition>({
     locale: 'fr',
     translations: {
       en: {
@@ -114,7 +115,7 @@ test('Should process nested translations', () => {
       q: [{ name: string }]
     }
   }
-  const t = createTranslator<Definition>({
+  const t = createIvvyTranslator<Definition>({
     locale: 'en',
     translations: {
       en: {

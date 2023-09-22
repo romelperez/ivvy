@@ -31,10 +31,10 @@ type TranslationValues<Definition extends BaseDefinition> = {
         : never
 }
 
-type Translations<Definition extends BaseDefinition> = Partial<Record<IvvyLocale, TranslationValues<Definition>>> & Record<IvvyLocaleDefault, TranslationValues<Definition>>
+type IvvyTranslations<Definition extends BaseDefinition> = Partial<Record<IvvyLocale, TranslationValues<Definition>>> & Record<IvvyLocaleDefault, TranslationValues<Definition>>
 
 const createIvvyTranslator = <Definition extends BaseDefinition>(props: {
-  translations: Translations<Definition>
+  translations: IvvyTranslations<Definition>
   locale: IvvyLocale
 }) => {
   const { translations, locale } = props
@@ -92,5 +92,5 @@ const createIvvyTranslator = <Definition extends BaseDefinition>(props: {
   }
 }
 
-export type { Translations }
+export type { IvvyTranslations }
 export { createIvvyTranslator }

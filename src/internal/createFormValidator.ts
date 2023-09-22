@@ -3,7 +3,7 @@ import { type YrelErrorTranslations, isYrel, validateYrel } from 'yrel'
 
 import type { IvvyLocale, IvvyManagerFieldsErrors, IvvyManagerProps, IvvyManagerState } from '../types'
 import { IVVY_LOCALE_DEFAULT } from '../constants'
-import { createTranslator } from '../createTranslator'
+import { createIvvyTranslator } from '../createIvvyTranslator'
 
 const createFormValidator = <Data extends Record<string, unknown>>(
   props: IvvyManagerProps<Data>,
@@ -21,7 +21,7 @@ const createFormValidator = <Data extends Record<string, unknown>>(
 
   const createMapErrorMessage = (): MapErrorMessage => {
     if (locale && translations) {
-      const translate = createTranslator<YrelErrorTranslations>({
+      const translate = createIvvyTranslator<YrelErrorTranslations>({
         locale,
         translations: translations as Record<IvvyLocale, Record<keyof YrelErrorTranslations, string>>
       })
