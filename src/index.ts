@@ -1,3 +1,4 @@
 export * from './types'
 export * from './constants'
-export * from './createTranslator'
+export * from './createIvvyTranslator'
+export * from './createIvvyManager'

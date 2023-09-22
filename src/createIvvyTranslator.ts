@@ -33,7 +33,7 @@ type TranslationValues<Definition extends BaseDefinition> = {
 
 type Translations<Definition extends BaseDefinition> = Partial<Record<IvvyLocale, TranslationValues<Definition>>> & Record<IvvyLocaleDefault, TranslationValues<Definition>>
 
-const createTranslator = <Definition extends BaseDefinition>(props: {
+const createIvvyTranslator = <Definition extends BaseDefinition>(props: {
   translations: Translations<Definition>
   locale: IvvyLocale
 }) => {
@@ -78,7 +78,8 @@ const createTranslator = <Definition extends BaseDefinition>(props: {
     if (variables) {
       try {
         return renderTextTemplate(template, variables)
-      } catch (err) {
+      }
+      catch (err) {
         throw new Error(
           `The translation for the key "${path}" did not receive the expected variables. ${
             err instanceof Error ? `${err.message}.` : ''
@@ -92,4 +93,4 @@ const createTranslator = <Definition extends BaseDefinition>(props: {
 }
 
 export type { Translations }
-export { createTranslator }
+export { createIvvyTranslator }
