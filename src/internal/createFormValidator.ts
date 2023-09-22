@@ -1,7 +1,7 @@
 import { get } from 'svelte/store'
 import { type YrelErrorTranslations, isYrel, validateYrel } from 'yrel'
 
-import type { IvvyLocale, IvvyManagerFieldsErrors, IvvyManagerProps, IvvyManagerState } from '../types'
+import type { IvvyLocales, IvvyManagerFieldsErrors, IvvyManagerProps, IvvyManagerState } from '../types'
 import { IVVY_LOCALE_DEFAULT } from '../constants'
 import { createIvvyTranslator } from '../createIvvyTranslator'
 
@@ -23,7 +23,7 @@ const createFormValidator = <Data extends Record<string, unknown>>(
     if (locale && translations) {
       const translate = createIvvyTranslator<YrelErrorTranslations>({
         locale,
-        translations: translations as Record<IvvyLocale, Record<keyof YrelErrorTranslations, string>>
+        translations: translations as Record<IvvyLocales, Record<keyof YrelErrorTranslations, string>>
       })
 
       return (msg, vars) => {

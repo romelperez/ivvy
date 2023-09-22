@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 import template from 'lodash/template'
-import type { IvvyLocale, IvvyLocaleDefault } from './types'
+import type { IvvyLocales } from './types'
 import { IVVY_LOCALE_DEFAULT } from './constants'
 
 // For text templates with variables in "string {{variable}} string..." format.
@@ -31,13 +31,21 @@ type TranslationValues<Definition extends BaseDefinition> = {
         : never
 }
 
-type IvvyTranslations<Definition extends BaseDefinition> = Partial<Record<IvvyLocale, TranslationValues<Definition>>> & Record<IvvyLocaleDefault, TranslationValues<Definition>>
+type IvvyTranslations<Definition extends BaseDefinition, Locales extends IvvyLocales, LocaleDefault extends IvvyLocales>
+  = Partial<Record<Locales, TranslationValues<Definition>>> & Record<LocaleDefault, TranslationValues<Definition>>
 
-const createIvvyTranslator = <Definition extends BaseDefinition>(props: {
-  translations: IvvyTranslations<Definition>
-  locale: IvvyLocale
-}) => {
-  const { translations, locale } = props
+const createIvvyTranslator = <
+  Definition extends BaseDefinition,
+  Locales extends IvvyLocales = IvvyLocales,
+  LocaleDefault extends IvvyLocales = typeof IVVY_LOCALE_DEFAULT
+>(
+    props: {
+      translations: IvvyTranslations<Definition, Locales, LocaleDefault>
+      locale: Locales
+      localeDefault?: LocaleDefault
+    }
+  ) => {
+  const { translations, locale, localeDefault } = props
 
   return <
     Dictionary extends {
@@ -54,7 +62,7 @@ const createIvvyTranslator = <Definition extends BaseDefinition>(props: {
     path: Path,
     ...params: Params
   ): string => {
-    const definition = translations[locale] ?? translations[IVVY_LOCALE_DEFAULT]
+    const definition = translations[locale] ?? translations[(localeDefault ?? IVVY_LOCALE_DEFAULT) as LocaleDefault]
 
     if (!definition) {
       return ''
