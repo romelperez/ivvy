@@ -60,8 +60,8 @@
     "dev": "sh ./scripts/build-esm.sh --watch",
     "lint": "eslint ./src/**/*.ts",
     "lint-fix": "eslint ./src/**/*.ts --fix",
-    "test": "vitest",
-    "integration": "npm run clean && npm run build && npm run lint && npm run test -- --run",
-    "prepublishOnly": "npm run integration"
+    "test-unit": "vitest",
+    "test": "npm run clean && npm run build && npm run lint && npm run test-unit -- --run",
+    "prepublishOnly": "npm run test"
   }
 }
