@@ -1,17 +1,14 @@
 import { get } from 'svelte/store'
-import { type YrelErrorTranslations, isYrel, validateYrel } from 'yrel'
+import { type YrelErrorTranslations, type YrelSchema, isYrel, validateYrel } from 'yrel'
+import { type UktiLocales, createUktiTranslator } from 'ukti'
 
-import type { IvvyLocales, IvvyManagerFieldsErrors, IvvyManagerProps, IvvyManagerState } from '../types'
-import { IVVY_LOCALE_DEFAULT } from '../constants'
-import { createIvvyTranslator } from '../createIvvyTranslator'
+import type { IvvyManagerFieldsErrors, IvvyManagerProps, IvvyManagerState } from '../types'
 
 const createFormValidator = <Data extends Record<string, unknown>>(
   props: IvvyManagerProps<Data>,
   state: IvvyManagerState<Data>
 ): (() => void) => {
-  const { locale = IVVY_LOCALE_DEFAULT, translations, validators } = props
-
-  type MapErrorMessage = (msg: string, vars?: unknown) => string
+  const { locale, translations } = props
 
   interface FieldValidation {
     name: keyof Data
@@ -19,11 +16,13 @@ const createFormValidator = <Data extends Record<string, unknown>>(
     errors: string[]
   }
 
+  type MapErrorMessage = (msg: string, vars?: unknown) => string
+
   const createMapErrorMessage = (): MapErrorMessage => {
     if (locale && translations) {
-      const translate = createIvvyTranslator<YrelErrorTranslations>({
+      const translate = createUktiTranslator<YrelErrorTranslations>({
         locale,
-        translations: translations as Record<IvvyLocales, Record<keyof YrelErrorTranslations, string>>
+        translations: translations as Record<UktiLocales, Record<keyof YrelErrorTranslations, string>>
       })
 
       return (msg, vars) => {
@@ -39,13 +38,15 @@ const createFormValidator = <Data extends Record<string, unknown>>(
 
   return (): void => {
     const data = get(state.data)
-    const validatorsKeys = Object.keys(validators) as Array<keyof Data>
+    const validatorsKeys = Object.keys(props.validators) as Array<keyof Data>
 
     const fieldsValidations: FieldValidation[] = validatorsKeys
       .map((validatorKey) => {
         const fieldData = data[validatorKey]
-        const getFieldValidator = validators[validatorKey]
-        const fieldValidator = getFieldValidator(data)
+        const getFieldValidator = props.validators[validatorKey]
+        const fieldValidator = typeof getFieldValidator === 'function'
+          ? getFieldValidator(data)
+          : getFieldValidator
 
         // It is valid.
         if (fieldValidator === true) {
@@ -53,29 +54,28 @@ const createFormValidator = <Data extends Record<string, unknown>>(
           return validations
         }
 
-        // A single error message.
-        if (typeof fieldValidator === 'string') {
-          const errors = [mapErrorMessage(fieldValidator)]
-          const validations: FieldValidation[] = [{ name: validatorKey, isValid: false, errors }]
-          return validations
-        }
-
         // A list of error messages.
         if (Array.isArray(fieldValidator)) {
+          if (!fieldValidator.length) {
+            throw new Error(
+              'Ivvy form manager validators must be of type "YrelSchema | data => true | [string, ...string[]]".'
+            )
+          }
+
           const errors = fieldValidator.map((msg) => mapErrorMessage(msg))
           const validations: FieldValidation[] = [{ name: validatorKey, isValid: false, errors }]
           return validations
         }
 
-        if (!isYrel(fieldValidator)) {
+        if (!isYrel(fieldValidator as YrelSchema)) {
           throw new Error(
-            'Form manager validators must be of type "true | string | string[] | DataSchema".'
+            'Ivvy form manager validators must be of type "YrelSchema | data => true | [string, ...string[]]".'
           )
         }
 
-        // Otherwise, it is a DataSchema.
+        // Otherwise, it is a Yrel schema.
 
-        const schemaValidation = validateYrel(fieldValidator, fieldData, {
+        const schemaValidation = validateYrel(fieldValidator as YrelSchema, fieldData, {
           rootKey: validatorKey as string
         })
 

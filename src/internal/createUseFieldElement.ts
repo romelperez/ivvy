@@ -14,9 +14,7 @@ const createUseFieldElement = <Data extends Record<string, unknown>>(
 
     if (!Object.keys(props.initialData).includes(name as string)) {
       throw new Error(
-        `The provided form element with name "${String(
-          name
-        )}" is not defined the initial form manager configuration.`
+        `The provided form element with name "${String(name)}" is not defined the initial form manager configuration.`
       )
     }
 

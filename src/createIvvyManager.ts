@@ -3,7 +3,6 @@
 // value should be set.
 // TODO: Add side-effects functionality to allow to update data values when
 // specific values change under certain conditions.
-// TODO: Add a way to update specific fields values.
 // TODO: Add option for event types to mark an element as dirty.
 
 import { writable, get } from 'svelte/store'
