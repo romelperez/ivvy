@@ -1,0 +1,46 @@
+import { test, expect } from '@playwright/experimental-ct-svelte'
+import InitialsComponent from './Initials.svelte'
+
+test.use({ viewport: { width: 1000, height: 500 } })
+
+test('should be initially is untouched', async ({ mount }) => {
+  const component = await mount(InitialsComponent)
+  const stat = component.locator('[data-stat-istouched]')
+  await expect(stat).toHaveText('touched: no')
+})
+
+test('should be initially validated', async ({ mount }) => {
+  const component = await mount(InitialsComponent)
+  const stat = component.locator('[data-stat-isvalid]')
+  await expect(stat).toHaveText('valid: no')
+})
+
+test('should not show invalid field error if untouched', async ({ mount }) => {
+  const component = await mount(InitialsComponent)
+  const error = component.locator('[data-name="email"] [data-is-error]')
+  await expect(error).toHaveText('')
+})
+
+test('should set initial value to input text field', async ({ mount }) => {
+  const component = await mount(InitialsComponent)
+  const field = component.locator('[data-name="fullName"] input')
+  await expect(field).toHaveValue('Ivvy')
+})
+
+test('should set initial value to input number field', async ({ mount }) => {
+  const component = await mount(InitialsComponent)
+  const field = component.locator('[data-name="age"] input')
+  await expect(field).toHaveValue('10')
+})
+
+test('should set initial value to select field', async ({ mount }) => {
+  const component = await mount(InitialsComponent)
+  const field = component.locator('[data-name="profession"] select')
+  await expect(field).toHaveValue('musician')
+})
+
+test('should set initial value to textarea field', async ({ mount }) => {
+  const component = await mount(InitialsComponent)
+  const field = component.locator('[data-name="bio"] textarea')
+  await expect(field).toHaveValue('A basic description...')
+})

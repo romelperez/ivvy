@@ -3,7 +3,8 @@
   "ignorePatterns": [
     "node_modules",
     "build",
-    "vite.config.ts"
+    "vite.config.ts",
+    "playwright.config.ts"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {

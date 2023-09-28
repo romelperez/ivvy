@@ -11,5 +11,5 @@
     "baseUrl": ".",
     "rootDir": "."
   },
-  "exclude": ["node_modules", "build", "vite.config.ts"]
+  "exclude": ["node_modules", "build", "vite.config.ts", "playwright.config.ts"]
 }

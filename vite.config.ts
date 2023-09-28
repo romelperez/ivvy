@@ -9,8 +9,8 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, 'src/index.ts'),
       formats: ['umd'],
-      name: 'yrel',
-      fileName: 'yrel',
+      name: 'ivvy',
+      fileName: 'ivvy',
     },
     rollupOptions: {
       external: [],

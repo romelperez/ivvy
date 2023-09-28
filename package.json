@@ -35,7 +35,10 @@
   },
   "devDependencies": {
     "@build-script/typescript-transformer-append-js-extension": "^1.0.9",
+    "@playwright/experimental-ct-svelte": "^1.38.1",
+    "@playwright/test": "^1.38.1",
     "@types/lodash": "^4.14.199",
+    "@types/node": "^20.7.1",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "eslint": "^8.49.0",
     "eslint-config-standard-with-typescript": "^39.0.0",
@@ -53,8 +56,8 @@
     "yrel": "^2.1.2"
   },
   "scripts": {
-    "prepare": "husky install",
-    "clean": "rm -rf ./build && rm -f .tsbuildinfo",
+    "prepare": "husky install && playwright install --with-deps",
+    "clean": "rm -rf ./build && rm -f ./.tsbuildinfo && rm -rf ./playwright/.cache",
     "build": "npm run build-esm && npm run build-cjs && npm run build-umd",
     "build-esm": "sh ./scripts/build-esm.sh",
     "build-cjs": "sh ./scripts/build-cjs.sh",
@@ -63,7 +66,8 @@
     "lint": "eslint ./src/**/*.ts",
     "lint-fix": "eslint ./src/**/*.ts --fix",
     "test-unit": "vitest",
-    "test": "npm run clean && npm run build && npm run lint && npm run test-unit -- --run",
+    "test-e2e": "playwright test",
+    "test": "npm run clean && npm run build && npm run lint && npm run test-unit -- --run && npm run test-e2e",
     "prepublishOnly": "npm run test"
   }
 }
