@@ -27,6 +27,12 @@ test('should set initial value to input text field', async ({ mount }) => {
   await expect(field).toHaveValue('Ivvy')
 })
 
+test('should set initial value to input email field', async ({ mount }) => {
+  const component = await mount(InitialsComponent)
+  const field = component.locator('[data-name="email"] input')
+  await expect(field).toHaveValue('ivvy@example')
+})
+
 test('should set initial value to input number field', async ({ mount }) => {
   const component = await mount(InitialsComponent)
   const field = component.locator('[data-name="age"] input')
@@ -43,4 +49,24 @@ test('should set initial value to textarea field', async ({ mount }) => {
   const component = await mount(InitialsComponent)
   const field = component.locator('[data-name="bio"] textarea')
   await expect(field).toHaveValue('A basic description...')
+})
+
+test('should set initial value to radio field', async ({ mount }) => {
+  const component = await mount(InitialsComponent)
+  await expect(component.locator('[data-name="sex"] input[value="female"]')).toBeChecked()
+  await expect(component.locator('[data-name="sex"] input[value="male"]')).not.toBeChecked()
+})
+
+test('should set initial value to checkbox field', async ({ mount }) => {
+  const component = await mount(InitialsComponent)
+  const field = component.locator('[data-name="is_married"] input')
+  await expect(field).toBeChecked()
+})
+
+test('should set initial value to multiple checkboxs field', async ({ mount }) => {
+  const component = await mount(InitialsComponent)
+  await expect(component.locator('[data-name="favourite_pets"] input[value="dogs"]')).not.toBeChecked()
+  await expect(component.locator('[data-name="favourite_pets"] input[value="cats"]')).toBeChecked()
+  await expect(component.locator('[data-name="favourite_pets"] input[value="parrots"]')).not.toBeChecked()
+  await expect(component.locator('[data-name="favourite_pets"] input[value="cows"]')).not.toBeChecked()
 })
