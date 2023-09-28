@@ -21,6 +21,7 @@ const createUseFormElement = <Data extends Record<string, unknown>>(
         {}
       )
       state.touches.set(dirtiesInitial as Record<keyof Data, true>)
+      state.isTouched.set(true)
 
       if (get(state.isValid)) {
         onSubmit?.(get(state.data), event)
@@ -38,8 +39,10 @@ const createUseFormElement = <Data extends Record<string, unknown>>(
         )
         if (firstErrorElement) {
           firstErrorElement.focus?.()
-          // Unknown type error.
-          firstErrorElement.scrollIntoView?.({ block: 'center', behavior: 'instant' as any })
+          firstErrorElement.scrollIntoView?.({
+            block: 'center',
+            behavior: 'instant' as any // Unknown type error.
+          })
         }
       }
     }
