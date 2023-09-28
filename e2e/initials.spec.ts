@@ -17,7 +17,7 @@ test('should be initially validated', async ({ mount }) => {
 
 test('should not show invalid field error if untouched', async ({ mount }) => {
   const component = await mount(InitialsComponent)
-  const error = component.locator('[data-name="email"] [data-is-error]')
+  const error = component.locator('[data-name="email"] [data-error]')
   await expect(error).toHaveText('')
 })
 

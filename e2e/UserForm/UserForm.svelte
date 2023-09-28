@@ -7,7 +7,7 @@
   const {
     isValid,
     isTouched,
-    fields: { touches, errors },
+    fields: { data, touches, errors },
     useFormElement,
     useFieldElement
   } = formManager
@@ -22,6 +22,8 @@
 
   <div data-stat-istouched>touched: {$isTouched ? 'yes' : 'no'}</div>
   <div data-stat-isvalid>valid: {$isValid ? 'yes' : 'no'}</div>
+  <div data-stat-submitted>submitted: no</div>
+  <div data-stat-data>data: {JSON.stringify($data)}</div>
 
   <label data-name="fullName">
     <div data-is-label>Full Name:</div>
@@ -31,7 +33,7 @@
       disabled={isFormSubmitting}
       use:useFieldElement
     />
-    <div data-is-error>
+    <div data-error>
       {$touches.fullName && $errors.fullName?.[0] || ''}
     </div>
   </label>
@@ -44,7 +46,7 @@
       disabled={isFormSubmitting}
       use:useFieldElement
     />
-    <div data-is-error>
+    <div data-error>
       {$touches.email && $errors.email?.[0] || ''}
     </div>
   </label>
@@ -57,7 +59,7 @@
       disabled={isFormSubmitting}
       use:useFieldElement
     />
-    <div data-is-error>
+    <div data-error>
       {$touches.age && $errors.age?.[0] || ''}
     </div>
   </label>
@@ -73,7 +75,7 @@
       <option value="performer">Performer</option>
       <option value="sculptor">Sculptor</option>
     </select>
-    <div data-is-error>
+    <div data-error>
       {$touches.profession && $errors.profession?.[0] || ''}
     </div>
   </label>
@@ -85,7 +87,7 @@
       disabled={isFormSubmitting}
       use:useFieldElement
     />
-    <div data-is-error>
+    <div data-error>
       {$touches.bio && $errors.bio?.[0] || ''}
     </div>
   </label>
@@ -112,7 +114,7 @@
         use:useFieldElement
       />
     </label>
-    <div data-is-error>
+    <div data-error>
       {$touches.sex && $errors.sex?.[0] || ''}
     </div>
   </div>
@@ -125,7 +127,7 @@
       disabled={isFormSubmitting}
       use:useFieldElement
     />
-    <div data-is-error>
+    <div data-error>
       {$touches.is_married && $errors.is_married?.[0] || ''}
     </div>
   </label>
@@ -172,7 +174,7 @@
         use:useFieldElement
       />
     </label>
-    <div data-is-error>
+    <div data-error>
       {$touches.favourite_pets && $errors.favourite_pets?.[0] || ''}
     </div>
   </div>
