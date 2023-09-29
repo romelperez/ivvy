@@ -92,6 +92,64 @@ test('Should accept yrel object schema as validators', () => {
   })
 })
 
+test('Should accept yrel schemas as validators ', () => {
+  type Data = {
+    name: string
+    age: number
+    married: boolean
+  }
+  const manager = createIvvyManager<Data>({
+    initialData: {
+      name: 'ivvy',
+      age: 21,
+      married: false
+    },
+    validators: {
+      name: y.string().min(2).max(10),
+      age: y.number().gte(18).lte(100),
+      married: y.boolean()
+    }
+  })
+  expect(get(manager.isValid)).toBe(true)
+  expect(get(manager.errors)).toEqual({})
+
+  manager.data.set({ name: 'i', age: 2, married: true })
+  expect(get(manager.isValid)).toBe(false)
+  expect(get(manager.errors)).toEqual({
+    name: ['err_string_min'],
+    age: ['err_number_gte']
+  })
+})
+
+test('Should accept yrel schemas as validators functions', () => {
+  type Data = {
+    name: string
+    age: number
+    married: boolean
+  }
+  const manager = createIvvyManager<Data>({
+    initialData: {
+      name: 'ivvy',
+      age: 21,
+      married: false
+    },
+    validators: {
+      name: () => y.string().min(2).max(10),
+      age: () => y.number().gte(18).lte(100),
+      married: () => y.boolean()
+    }
+  })
+  expect(get(manager.isValid)).toBe(true)
+  expect(get(manager.errors)).toEqual({})
+
+  manager.data.set({ name: 'i', age: 2, married: true })
+  expect(get(manager.isValid)).toBe(false)
+  expect(get(manager.errors)).toEqual({
+    name: ['err_string_min'],
+    age: ['err_number_gte']
+  })
+})
+
 test('Should accept yrel object schema as validators with translations', () => {
   const schema = y.object({
     name: y.string().min(2).max(10),
