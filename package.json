@@ -4,8 +4,16 @@
   "publishConfig": {
     "access": "public"
   },
-  "description": "",
-  "keywords": [],
+  "description": "Svelte form manager with dynamic type safe validators and l10n/i18n support.",
+  "keywords": [
+    "typescript",
+    "svelte",
+    "sveltekit",
+    "form-validation",
+    "form-management",
+    "l10n",
+    "i18n"
+  ],
   "homepage": "https://github.com/romelperez/ivvy",
   "repository": {
     "type": "git",
@@ -26,7 +34,6 @@
   "types": "./build/esm/index.d.ts",
   "module": "./build/esm/index.js",
   "main": "./build/cjs/index.js",
-  "unpkg": "./build/umd/ivvy.umd.cjs",
   "peerDependencies": {
     "lodash": "4",
     "svelte": "4",
@@ -51,24 +58,22 @@
     "ttypescript": "^1.5.15",
     "typescript": "4.9",
     "ukti": "^1.0.1",
-    "vite": "^4.4.9",
     "vitest": "^0.34.4",
     "yrel": "^2.1.2"
   },
   "scripts": {
     "prepare": "husky install && playwright install --with-deps",
     "clean": "rm -rf ./build && rm -f ./.tsbuildinfo && rm -rf ./playwright/.cache",
-    "build": "npm run build-esm && npm run build-cjs && npm run build-umd",
+    "build": "npm run build-esm && npm run build-cjs",
     "build-esm": "sh ./scripts/build-esm.sh",
     "build-cjs": "sh ./scripts/build-cjs.sh",
-    "build-umd": "vite build",
     "dev": "sh ./scripts/build-esm.sh --watch",
     "lint": "eslint ./src/**/*.ts",
     "lint-fix": "eslint ./src/**/*.ts --fix",
     "test-types": "vitest typecheck",
     "test-unit": "vitest",
     "test-e2e": "playwright test",
-    "test": "npm run clean && npm run build && npm run lint && npm run test-types && npm run test-unit -- --run && npm run test-e2e",
+    "test": "npm run clean && npm run build && npm run lint && npm run test-types -- --run && npm run test-unit -- --run && npm run test-e2e",
     "prepublishOnly": "npm run test"
   }
 }
