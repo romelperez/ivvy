@@ -23,9 +23,9 @@ test('Should accept inline-validators', () => {
   })
   expect(get(manager.isValid)).toBe(true)
 
-  manager.fields.data.set({ name: 'i', age: 2, married: true })
+  manager.data.set({ name: 'i', age: 2, married: true })
   expect(get(manager.isValid)).toBe(false)
-  expect(get(manager.fields.errors)).toEqual({
+  expect(get(manager.errors)).toEqual({
     name: ['err_string_min'],
     age: ['err_number_gte']
   })
@@ -58,9 +58,9 @@ test('Should accept inline-validators with translations', () => {
   })
   expect(get(manager.isValid)).toBe(true)
 
-  manager.fields.data.set({ name: 'i', age: 2, married: true })
+  manager.data.set({ name: 'i', age: 2, married: true })
   expect(get(manager.isValid)).toBe(false)
-  expect(get(manager.fields.errors)).toEqual({
+  expect(get(manager.errors)).toEqual({
     name: ['String requires min length.'],
     age: ['Number requires length.']
   })
@@ -82,11 +82,11 @@ test('Should accept yrel object schema as validators', () => {
     validators: schema.shape
   })
   expect(get(manager.isValid)).toBe(true)
-  expect(get(manager.fields.errors)).toEqual({})
+  expect(get(manager.errors)).toEqual({})
 
-  manager.fields.data.set({ name: 'i', age: 2, married: true })
+  manager.data.set({ name: 'i', age: 2, married: true })
   expect(get(manager.isValid)).toBe(false)
-  expect(get(manager.fields.errors)).toEqual({
+  expect(get(manager.errors)).toEqual({
     name: ['err_string_min'],
     age: ['err_number_gte']
   })
@@ -115,11 +115,11 @@ test('Should accept yrel object schema as validators with translations', () => {
     }
   })
   expect(get(manager.isValid)).toBe(true)
-  expect(get(manager.fields.errors)).toEqual({})
+  expect(get(manager.errors)).toEqual({})
 
-  manager.fields.data.set({ name: 'i', age: 2, married: true })
+  manager.data.set({ name: 'i', age: 2, married: true })
   expect(get(manager.isValid)).toBe(false)
-  expect(get(manager.fields.errors)).toEqual({
+  expect(get(manager.errors)).toEqual({
     name: ['String requires min length 2.'],
     age: ['Number requires gte 18.']
   })

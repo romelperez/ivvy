@@ -7,7 +7,9 @@
   const {
     isValid,
     isTouched,
-    fields: { data, touches, errors },
+    data,
+    touches,
+    errors,
     useFormElement,
     useFieldElement
   } = formManager

@@ -92,16 +92,12 @@ const createIvvyManager = <Data extends Record<string, unknown>>(
     state.data.update((data) => ({ ...data, ...newData }))
   }
 
-  const fields = {
-    data: state.data,
-    touches: state.touches,
-    errors: state.errors
-  }
-
   const formManager = {
     isValid: state.isValid,
     isTouched: state.isTouched,
-    fields,
+    data: state.data,
+    touches: state.touches,
+    errors: state.errors,
     validate,
     reset,
     destroy,

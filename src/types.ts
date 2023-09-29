@@ -50,11 +50,9 @@ export type IvvyManagerState<Data extends Record<string, unknown>> = {
 export interface IvvyManager<Data extends Record<string, unknown>> {
   isValid: Writable<boolean>
   isTouched: Writable<boolean>
-  fields: {
-    data: Writable<IvvyManagerFieldsData<Data>>
-    touches: Writable<IvvyManagerFieldsTouches<Data>>
-    errors: Writable<IvvyManagerFieldsErrors<Data>>
-  }
+  data: Writable<IvvyManagerFieldsData<Data>>
+  touches: Writable<IvvyManagerFieldsTouches<Data>>
+  errors: Writable<IvvyManagerFieldsErrors<Data>>
   validate: () => void
   reset: () => void
   destroy: () => void
