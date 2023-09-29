@@ -20,15 +20,14 @@ export type IvvyManagerPropsFormatters<Data extends object> = {
   [P in keyof Data]?: (value: unknown, data: Data) => Data[P]
 }
 
-// TODO: Force validator YrelSchema type to the Data item type.
 export type IvvyManagerPropsValidators<Data extends Record<string, unknown>> =
-  { [P in keyof Data]: YrelSchema | ((data: Data) => true | string[] | YrelSchema) }
+  { [P in keyof Data]: YrelSchema<Data[P]> | ((data: Data) => true | string[] | YrelSchema<Data[P]>) }
 
 // TODO: Add custom translations definition configuration.
 export interface IvvyManagerProps<Data extends Record<string, unknown>> {
   initialData: IvvyManagerInitialData<Data>
-  formatters?: IvvyManagerPropsFormatters<Data>
   validators: IvvyManagerPropsValidators<Data>
+  formatters?: IvvyManagerPropsFormatters<Data>
   preventSubmit?: 'always' | 'onError' | false
   cleanInputFileValue?: boolean
   locale?: UktiLocales
