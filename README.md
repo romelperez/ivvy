@@ -100,9 +100,32 @@ or multiple forms.
 The [Ukti](https://github.com/romelperez/ukti) translations are optional but would
 provide a better user experience.
 
-## Initial Data
+## Form Data
 
-TODO
+The manager form data has to be an object and each property representing a form field.
+Each field can be of any kind of data.
+
+The initial data object has to have all the properties. They can be `undefined` / `null`.
+
+```ts
+import { createIvvyManager } from 'ivvy'
+
+type FormData = {
+  name: string
+  age: number
+}
+
+const manager = createIvvyManager<FormData>({
+  initialData: {
+    name: null,
+    age: null
+  },
+  validators: {
+    name: () => true,
+    age: () => true
+  }
+})
+```
 
 ## Validators
 
