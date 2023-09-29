@@ -20,8 +20,9 @@ export type IvvyManagerPropsFormatters<Data extends object> = {
   [P in keyof Data]?: (value: unknown, data: Data) => Data[P]
 }
 
+// TODO: Force validator YrelSchema type to the Data item type.
 export type IvvyManagerPropsValidators<Data extends Record<string, unknown>> =
-  { [P in keyof Data]: YrelSchema | ((data: Data) => true | string[] | YrelSchema<Data[P]>) }
+  { [P in keyof Data]: YrelSchema | ((data: Data) => true | string[] | YrelSchema) }
 
 // TODO: Add custom translations definition configuration.
 export interface IvvyManagerProps<Data extends Record<string, unknown>> {
