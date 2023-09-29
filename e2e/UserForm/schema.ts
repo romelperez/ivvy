@@ -27,4 +27,4 @@ export const schema = y.object({
     .max(10)
 })
 
-export type Schema = InferYrel<typeof schema>
+export type FormData = InferYrel<typeof schema>

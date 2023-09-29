@@ -4,25 +4,20 @@ import { type FormData, schema, translations } from './UserForm'
 export const createFormManager = (): IvvyManager<FormData> => createIvvyManager<FormData>({
   preventSubmit: 'always',
   initialData: {
-    fullName: 'Ivvy',
-    email: 'ivvy@example',
-    age: 10,
-    profession: 'musician',
-    bio: 'A basic description...',
-    sex: 'female',
-    is_married: true,
-    favourite_pets: ['cats']
+    fullName: null,
+    email: null,
+    age: null,
+    profession: null,
+    bio: null,
+    sex: null,
+    is_married: null,
+    favourite_pets: null
   },
   formatters: {
+    fullName: (value) => value ? String(value).toUpperCase() : '',
     age: (value) => (isNaN(Number(value)) ? null : Number(value))
   },
   validators: schema.shape,
   locale: 'en',
-  translations,
-  onSubmit: () => {
-    const stat = document.querySelector('[data-stat-submitted]')
-    if (stat) {
-      stat.textContent = 'submitted: yes'
-    }
-  }
+  translations
 })
