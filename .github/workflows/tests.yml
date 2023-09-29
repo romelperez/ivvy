@@ -16,6 +16,7 @@ jobs:
     - run: npm ci
     - run: npm run build
     - run: npm run lint
+    - run: npm run test-types -- --run
     - run: npm run test-unit -- --run
     - run: npm run test-e2e
     - uses: actions/upload-artifact@v3
