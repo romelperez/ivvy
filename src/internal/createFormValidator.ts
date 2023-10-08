@@ -26,7 +26,7 @@ const createFormValidator = <Data extends Record<string, unknown>>(
       })
 
       return (msg, vars) => {
-        const translation = translate(msg as keyof YrelErrorTranslations, vars as any)
+        const translation = (translate[msg as keyof YrelErrorTranslations] as any)(vars as any)
         return translation || msg
       }
     }
