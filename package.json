@@ -1,10 +1,10 @@
 {
   "name": "ivvy",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "publishConfig": {
     "access": "public"
   },
-  "description": "Svelte form manager with dynamic type safe validators and l10n/i18n support.",
+  "description": "Svelte form manager with dynamic type safe validators and i18n/l10n support.",
   "keywords": [
     "typescript",
     "svelte",

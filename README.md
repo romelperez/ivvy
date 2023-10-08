@@ -8,7 +8,7 @@
 [![github stars](https://img.shields.io/github/stars/romelperez/ivvy.svg?style=social&label=stars)](https://github.com/romelperez/ivvy)
 [![license](https://img.shields.io/github/license/romelperez/ivvy.svg)](https://github.com/romelperez/ivvy/blob/main/LICENSE)
 
-Svelte form manager with dynamic type safe validators and l10n/i18n support.
+Svelte form manager with dynamic type safe validators and i18n/l10n support.
 
 ## Install
 
