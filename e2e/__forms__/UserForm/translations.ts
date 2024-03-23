@@ -16,7 +16,8 @@ export const translations: UktiTranslations<YrelErrorTranslations> = {
     err_string: 'This field is required.',
     err_string_nonempty: 'This field should not be empty.',
     err_string_trim: 'This field should not contain white spaces before or after.',
-    err_string_length: 'The field should have exactly {{length}} character{{length === 1 ? "" : "s"}}.',
+    err_string_length:
+      'The field should have exactly {{length}} character{{length === 1 ? "" : "s"}}.',
     err_string_min: 'The field should have at least {{min}} character{{min === 1 ? "" : "s"}}.',
     err_string_max: 'The field should have at most {{max}} character{{max === 1 ? "" : "s"}}.',
     err_string_date_time: 'This field is required.',

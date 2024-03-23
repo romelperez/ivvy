@@ -213,8 +213,8 @@ const manager = createIvvyManager<FormData>({
     age: 21
   },
   validators: {
-    name: (data) => data.name.length > 2 || ['min length 2'],
-    age: (data) => data.age > 18 || ['min value 18']
+    name: (data) => data.name.length > 2 || ['min length 2'],
+    age: (data) => data.age > 18 || ['min value 18']
   }
 })
 ```

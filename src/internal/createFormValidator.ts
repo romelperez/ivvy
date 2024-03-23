@@ -21,7 +21,10 @@ const createFormValidator = <Data extends Record<string, unknown>>(
   const createMapErrorMessage = (): MapErrorMessage => {
     if (language && translations) {
       const translator = createUktiTranslator<YrelErrorTranslations>({
-        translations: translations as Record<UktiLanguages, Record<keyof YrelErrorTranslations, string>>
+        translations: translations as Record<
+          UktiLanguages,
+          Record<keyof YrelErrorTranslations, string>
+        >
       })
 
       const translate = translator(language)
@@ -45,9 +48,8 @@ const createFormValidator = <Data extends Record<string, unknown>>(
       .map((validatorKey) => {
         const fieldData = data[validatorKey]
         const getFieldValidator = props.validators[validatorKey]
-        const fieldValidator = typeof getFieldValidator === 'function'
-          ? getFieldValidator(data)
-          : getFieldValidator
+        const fieldValidator =
+          typeof getFieldValidator === 'function' ? getFieldValidator(data) : getFieldValidator
 
         // It is valid.
         if (fieldValidator === true) {
@@ -118,8 +120,7 @@ const createFormValidator = <Data extends Record<string, unknown>>(
         .reduce((total, item) => ({ ...total, ...item }), {})
 
       state.errors.set(Object.freeze(newErrorsValue) as IvvyManagerFieldsErrors<Data>)
-    }
-    else {
+    } else {
       state.errors.set(Object.freeze({}))
     }
   }

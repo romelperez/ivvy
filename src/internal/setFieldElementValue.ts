@@ -20,21 +20,17 @@ const setFieldElementValue = <Data extends Record<string, unknown>>(
       // Boolean checkbox.
       if (typeof value === 'boolean') {
         element.checked = value
-      }
-      else if (typeof element.value === 'string' && element.value.length) {
+      } else if (typeof element.value === 'string' && element.value.length) {
         // String array checkbox.
         // The check is on the element "value" attribute.
         element.checked = Array.isArray(value) ? value.includes(element.value) : false
       }
-    }
-    else if (isInputRadio) {
+    } else if (isInputRadio) {
       element.checked = element.value === value
-    }
-    else if (!isInputFile && isFormElement) {
+    } else if (!isInputFile && isFormElement) {
       if (typeof value === 'string' || Number.isFinite(value)) {
         element.value = String(value)
-      }
-      else if (value === undefined || value === null) {
+      } else if (value === undefined || value === null) {
         element.value = ''
       }
     }

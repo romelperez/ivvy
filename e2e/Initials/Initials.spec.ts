@@ -63,8 +63,14 @@ test('should set initial value to checkbox field', async ({ mount }) => {
 
 test('should set initial value to multiple checkboxs field', async ({ mount }) => {
   const component = await mount(Component)
-  await expect(component.locator('[data-name="favourite_pets"] input[value="dogs"]')).not.toBeChecked()
+  await expect(
+    component.locator('[data-name="favourite_pets"] input[value="dogs"]')
+  ).not.toBeChecked()
   await expect(component.locator('[data-name="favourite_pets"] input[value="cats"]')).toBeChecked()
-  await expect(component.locator('[data-name="favourite_pets"] input[value="parrots"]')).not.toBeChecked()
-  await expect(component.locator('[data-name="favourite_pets"] input[value="cows"]')).not.toBeChecked()
+  await expect(
+    component.locator('[data-name="favourite_pets"] input[value="parrots"]')
+  ).not.toBeChecked()
+  await expect(
+    component.locator('[data-name="favourite_pets"] input[value="cows"]')
+  ).not.toBeChecked()
 })

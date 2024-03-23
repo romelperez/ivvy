@@ -25,8 +25,7 @@ const createUseFormElement = <Data extends Record<string, unknown>>(
 
       if (get(state.isValid)) {
         onSubmit?.(get(state.data), event)
-      }
-      else {
+      } else {
         if (preventSubmit === 'onError') {
           event.preventDefault()
         }

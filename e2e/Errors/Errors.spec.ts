@@ -17,13 +17,17 @@ test('should show error if touched and updated from valid to invalid', async ({ 
   const component = await mount(Component)
   await component.locator('[data-name="fullName"] input').fill('')
   await component.locator('[data-name="fullName"] input').blur()
-  await expect(component.locator('[data-name="fullName"] [data-error]')).toHaveText('This field should not be empty.')
+  await expect(component.locator('[data-name="fullName"] [data-error]')).toHaveText(
+    'This field should not be empty.'
+  )
 })
 
 test('should show error if touched and invalid', async ({ mount }) => {
   const component = await mount(Component)
   await component.locator('button').click()
-  await expect(component.locator('[data-name="email"] [data-error]')).toHaveText('A valid email address is required.')
+  await expect(component.locator('[data-name="email"] [data-error]')).toHaveText(
+    'A valid email address is required.'
+  )
 })
 
 test('should not show error if touched and updated from invalid to valid', async ({ mount }) => {

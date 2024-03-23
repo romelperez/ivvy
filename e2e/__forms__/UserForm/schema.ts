@@ -19,9 +19,7 @@ export const schema = y.object({
   sex: y.union([y.literal('male'), y.literal('female')]),
   is_married: y.boolean(),
   favourite_pets: y
-    .array(
-      y.union([y.literal('dogs'), y.literal('cats'), y.literal('parrots'), y.literal('cows')])
-    )
+    .array(y.union([y.literal('dogs'), y.literal('cats'), y.literal('parrots'), y.literal('cows')]))
     .nonempty()
     .min(2)
     .max(10)

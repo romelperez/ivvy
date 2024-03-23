@@ -12,16 +12,21 @@ export type IvvyManagerInitialData<Data extends Record<string, unknown>> = {
   [P in keyof Required<Data>]: Data[P] | undefined | null
 }
 
-export type IvvyManagerFieldsTouches<Data extends Record<string, unknown>> = Readonly<Partial<Record<keyof Data, boolean>>>
+export type IvvyManagerFieldsTouches<Data extends Record<string, unknown>> = Readonly<
+  Partial<Record<keyof Data, boolean>>
+>
 
-export type IvvyManagerFieldsErrors<Data extends Record<string, unknown>> = Readonly<Partial<Record<keyof Data & (string & {}), string[]>>>
+export type IvvyManagerFieldsErrors<Data extends Record<string, unknown>> = Readonly<
+  Partial<Record<keyof Data & (string & {}), string[]>>
+>
 
 export type IvvyManagerPropsFormatters<Data extends object> = {
   [P in keyof Data]?: (value: unknown, data: Data) => Data[P]
 }
 
-export type IvvyManagerPropsValidators<Data extends Record<string, unknown>> =
-  { [P in keyof Data]: YrelSchema<Data[P]> | ((data: Data) => true | string[] | YrelSchema<Data[P]>) }
+export type IvvyManagerPropsValidators<Data extends Record<string, unknown>> = {
+  [P in keyof Data]: YrelSchema<Data[P]> | ((data: Data) => true | string[] | YrelSchema<Data[P]>)
+}
 
 // TODO: Add custom translations definition configuration.
 export interface IvvyManagerProps<Data extends Record<string, unknown>> {
@@ -32,7 +37,9 @@ export interface IvvyManagerProps<Data extends Record<string, unknown>> {
   cleanInputFileValue?: boolean
   language?: UktiLanguages
   // TODO: translations?: Partial<Record<UktiLanguages, Partial<Record<keyof YrelErrorTranslations | (string & {}), string>>>>
-  translations?: Partial<Record<UktiLanguages, Partial<Record<keyof YrelErrorTranslations, string>>>>
+  translations?: Partial<
+    Record<UktiLanguages, Partial<Record<keyof YrelErrorTranslations, string>>>
+  >
   onUpdate?: (data: Data) => void
   onSubmit?: (data: Data, event: Event) => void
 }

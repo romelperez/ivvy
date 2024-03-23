@@ -70,20 +70,16 @@ const createUseFieldElement = <Data extends Record<string, unknown>>(
 
           if (element.checked) {
             valueNewRaw = Array.from(new Set([...(valueNewRaw as string[]), inputCheckboxValue]))
-          }
-          else {
+          } else {
             valueNewRaw = (valueNewRaw as string[]).filter((item) => item !== element.value)
           }
-        }
-        else {
+        } else {
           // Boolean checkbox.
           valueNewRaw = element.checked
         }
-      }
-      else if (isInputNumber) {
+      } else if (isInputNumber) {
         valueNewRaw = element.valueAsNumber
-      }
-      else if (isInputFile) {
+      } else if (isInputFile) {
         valueNewRaw = Array.from(element.files ?? [])
       }
 
@@ -118,8 +114,7 @@ const createUseFieldElement = <Data extends Record<string, unknown>>(
         [element, 'click', onUpdate],
         [element, 'click', onDirty]
       ])
-    }
-    else if (isInputFile) {
+    } else if (isInputFile) {
       element.addEventListener('input', onUpdate)
       element.addEventListener('input', onDirty)
 
@@ -128,8 +123,7 @@ const createUseFieldElement = <Data extends Record<string, unknown>>(
         [element, 'input', onUpdate],
         [element, 'input', onDirty]
       ])
-    }
-    else if (isSelect) {
+    } else if (isSelect) {
       element.addEventListener('change', onUpdate)
       element.addEventListener('change', onDirty)
 
@@ -138,8 +132,7 @@ const createUseFieldElement = <Data extends Record<string, unknown>>(
         [element, 'change', onUpdate],
         [element, 'change', onDirty]
       ])
-    }
-    else if (isFormElement) {
+    } else if (isFormElement) {
       element.addEventListener('input', onUpdate)
       element.addEventListener('change', onUpdate)
       element.addEventListener('change', onDirty)
