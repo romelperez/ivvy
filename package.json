@@ -55,7 +55,7 @@
     "yrel": "^2.1.6"
   },
   "scripts": {
-    "prepare": "husky install && playwright install --with-deps",
+    "prepare": "husky && playwright install --with-deps",
     "clean": "rm -rf ./build && rm -f ./.tsbuildinfo && rm -rf ./playwright/.cache",
     "build": "npm run build-esm && npm run build-cjs",
     "build-esm": "sh ./scripts/build-esm.sh",
