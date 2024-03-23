@@ -25,7 +25,12 @@ export default defineConfig({
     trace: 'on-first-retry',
 
     /* Port to use for Playwright component endpoint. */
-    ctPort: 3100
+    ctPort: 3100,
+
+    screenshot: {
+      mode: 'only-on-failure',
+      fullPage: true
+    }
   },
 
   /* Configure projects for major browsers */

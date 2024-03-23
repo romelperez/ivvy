@@ -18,6 +18,6 @@ export const createFormManager = (): IvvyManager<FormData> => createIvvyManager<
     age: (value) => (isNaN(Number(value)) ? null : Number(value))
   },
   validators: schema.shape,
-  locale: 'en',
+  language: 'en',
   translations
 })

@@ -48,7 +48,7 @@ test('Should accept inline-validators with translations', () => {
       age: ({ age }) => age > 18 || ['err_number_gte'],
       married: ({ married }) => typeof married === 'boolean' || ['']
     },
-    locale: 'en',
+    language: 'en',
     translations: {
       en: {
         err_number_gte: 'Number requires length.',
@@ -164,7 +164,7 @@ test('Should accept yrel object schema as validators with translations', () => {
       married: false
     },
     validators: schema.shape,
-    locale: 'en',
+    language: 'en',
     translations: {
       en: {
         err_number_gte: 'Number requires gte {{gte}}.',
