@@ -35,7 +35,6 @@
   "module": "./build/esm/index.js",
   "main": "./build/cjs/index.js",
   "peerDependencies": {
-    "lodash": "4",
     "svelte": "4",
     "ukti": "4",
     "yrel": "2"
@@ -43,12 +42,10 @@
   "devDependencies": {
     "@playwright/experimental-ct-svelte": "^1.42.1",
     "@playwright/test": "^1.42.1",
-    "@types/lodash": "^4.17.0",
     "@types/node": "^20.11.30",
     "eslint": "^8.57.0",
     "eslint-config-love": "^43.1.0",
     "husky": "^9.0.11",
-    "lodash": "^4.17.21",
     "svelte": "^4.2.12",
     "typescript": "5.3",
     "ukti": "^4.1.0",

@@ -1,5 +1,4 @@
 import { get } from 'svelte/store'
-import uniq from 'lodash/uniq'
 import type { IvvyManagerProps, IvvyManagerState, IvvyManagerFieldElement } from '../types.js'
 import { setFieldElementValue } from './setFieldElementValue.js'
 
@@ -70,7 +69,7 @@ const createUseFieldElement = <Data extends Record<string, unknown>>(
           valueNewRaw = Array.isArray(dataFieldValueCurrent) ? [...dataFieldValueCurrent] : []
 
           if (element.checked) {
-            valueNewRaw = uniq([...(valueNewRaw as string[]), inputCheckboxValue])
+            valueNewRaw = Array.from(new Set([...(valueNewRaw as string[]), inputCheckboxValue]))
           }
           else {
             valueNewRaw = (valueNewRaw as string[]).filter((item) => item !== element.value)

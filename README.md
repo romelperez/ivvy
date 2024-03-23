@@ -119,11 +119,8 @@ const manager = createIvvyManager<FormData>({
   initialData: {
     name: null,
     age: null
-  },
-  validators: {
-    name: () => true,
-    age: () => true
   }
+  // ...
 })
 ```
 
