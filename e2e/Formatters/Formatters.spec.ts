@@ -1,8 +1,6 @@
 import { test, expect } from '@playwright/experimental-ct-svelte'
 import Component from './Formatters.svelte'
 
-test.use({ viewport: { width: 1000, height: 500 } })
-
 test('should allow to format values after input changes', async ({ mount }) => {
   const component = await mount(Component)
 

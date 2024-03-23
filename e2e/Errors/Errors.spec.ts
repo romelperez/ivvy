@@ -1,8 +1,6 @@
 import { test, expect } from '@playwright/experimental-ct-svelte'
 import Component from './Errors.svelte'
 
-test.use({ viewport: { width: 1000, height: 500 } })
-
 test('should be touched if form is submitted', async ({ mount }) => {
   const component = await mount(Component)
   await component.locator('button').click()
@@ -11,7 +9,7 @@ test('should be touched if form is submitted', async ({ mount }) => {
 
 test('should not show error if touched and valid', async ({ mount }) => {
   const component = await mount(Component)
-  await component.locator('buttona').click()
+  await component.locator('button').click()
   await expect(component.locator('[data-name="fullName"] [data-error]')).toHaveText('')
 })
 
@@ -24,7 +22,7 @@ test('should show error if touched and updated from valid to invalid', async ({ 
 
 test('should show error if touched and invalid', async ({ mount }) => {
   const component = await mount(Component)
-  await component.locator('buttona').click()
+  await component.locator('button').click()
   await expect(component.locator('[data-name="email"] [data-error]')).toHaveText('A valid email address is required.')
 })
 

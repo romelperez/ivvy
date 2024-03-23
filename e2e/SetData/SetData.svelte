@@ -1,5 +1,5 @@
 <script>
-  import { UserForm } from './UserForm'
+  import { UserForm } from '../__forms__/UserForm'
   import { createFormManager } from './SetData'
 
   let isFormSubmitting = false

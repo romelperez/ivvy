@@ -1,6 +1,6 @@
 <script>
-  import { UserForm } from './UserForm'
-  import { createFormManager } from './Formatters'
+  import { UserForm } from '../__forms__/UserForm'
+  import { createFormManager } from './Initials'
 
   let isFormSubmitting = false
 

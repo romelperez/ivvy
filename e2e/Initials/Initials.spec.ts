@@ -1,8 +1,6 @@
 import { test, expect } from '@playwright/experimental-ct-svelte'
 import Component from './Initials.svelte'
 
-test.use({ viewport: { width: 1000, height: 500 } })
-
 test('should be initially is untouched', async ({ mount }) => {
   const component = await mount(Component)
   const stat = component.locator('[data-stat-istouched]')

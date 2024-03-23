@@ -1,5 +1,5 @@
-import { type IvvyManager, createIvvyManager } from '../'
-import { type FormData, schema, translations } from './UserForm'
+import { type IvvyManager, createIvvyManager } from '../../'
+import { type FormData, schema, translations } from '../__forms__/UserForm'
 
 export const createFormManager = (): IvvyManager<FormData> => createIvvyManager<FormData>({
   preventSubmit: 'always',
