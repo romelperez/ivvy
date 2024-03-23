@@ -8,16 +8,15 @@ const createUseFieldElement = <Data extends Record<string, unknown>>(
   props: IvvyManagerProps<Data>,
   state: IvvyManagerState<Data>
 ): UseFieldElement => {
-  return (element: IvvyManagerFieldElement) => {
+  return (element: IvvyManagerFieldElement): void => {
     const name = element.getAttribute('name') as keyof Data
 
     if (!Object.keys(props.initialData).includes(name as string)) {
       throw new Error(
-        `The provided form element with name "${String(name)}" is not defined the initial form manager configuration.`
+        `Ivvy was provided a form element with name "${String(name)}" which is not defined in the initial form manager configuration.`
       )
     }
 
-    // Save field element reference.
     const fieldsElements = get(state.fieldsElements)
     const fieldElementsCurrent = fieldsElements[name]
     const fieldElementsNew = fieldElementsCurrent ? [...fieldElementsCurrent, element] : [element]
@@ -29,12 +28,12 @@ const createUseFieldElement = <Data extends Record<string, unknown>>(
 
     setFieldElementValue(name, fieldElementsNew, get(state.data)[name])
 
-    const isInputCheckbox = element instanceof HTMLInputElement && element.type === 'checkbox'
-    const isInputRadio = element instanceof HTMLInputElement && element.type === 'radio'
-    const isInputNumber = element instanceof HTMLInputElement && element.type === 'number'
-    const isInputFile = element instanceof HTMLInputElement && element.type === 'file'
+    const isInput = element instanceof HTMLInputElement
+    const isInputCheckbox = isInput && element.type === 'checkbox'
+    const isInputRadio = isInput && element.type === 'radio'
+    const isInputNumber = isInput && element.type === 'number'
+    const isInputFile = isInput && element.type === 'file'
     const isSelect = element instanceof HTMLSelectElement
-
     const isFormElement =
       element instanceof HTMLInputElement ||
       element instanceof HTMLTextAreaElement ||
@@ -62,7 +61,7 @@ const createUseFieldElement = <Data extends Record<string, unknown>>(
             !Array.isArray(dataFieldValueCurrent)
           ) {
             throw new Error(
-              'If an input type checkbox has the attribute value with data, the corresponding form manager data type must be an array of strings or nullish.'
+              'Ivvy, if an input type checkbox has the attribute value with text, the corresponding form manager data type must be an array of strings or nullish.'
             )
           }
 
@@ -97,55 +96,51 @@ const createUseFieldElement = <Data extends Record<string, unknown>>(
       props.onUpdate?.(get(state.data))
     }
 
-    const onDirty = (): void => {
+    const onTouch = (): void => {
       state.isTouched.set(true)
       state.touches.update((touches) => Object.freeze({ ...touches, [name]: true }))
     }
 
-    // Set event listeners.
-
-    // Checked inputs.
     if (isInputCheckbox || isInputRadio) {
       element.addEventListener('click', onUpdate)
-      element.addEventListener('click', onDirty)
+      element.addEventListener('click', onTouch)
 
       state.domListeners.update((values) => [
         ...values,
         [element, 'click', onUpdate],
-        [element, 'click', onDirty]
+        [element, 'click', onTouch]
       ])
     } else if (isInputFile) {
       element.addEventListener('input', onUpdate)
-      element.addEventListener('input', onDirty)
+      element.addEventListener('input', onTouch)
 
       state.domListeners.update((values) => [
         ...values,
         [element, 'input', onUpdate],
-        [element, 'input', onDirty]
+        [element, 'input', onTouch]
       ])
     } else if (isSelect) {
       element.addEventListener('change', onUpdate)
-      element.addEventListener('change', onDirty)
+      element.addEventListener('change', onTouch)
 
       state.domListeners.update((values) => [
         ...values,
         [element, 'change', onUpdate],
-        [element, 'change', onDirty]
+        [element, 'change', onTouch]
       ])
     } else if (isFormElement) {
       element.addEventListener('input', onUpdate)
       element.addEventListener('change', onUpdate)
-      element.addEventListener('change', onDirty)
+      element.addEventListener('change', onTouch)
 
       state.domListeners.update((values) => [
         ...values,
         [element, 'input', onUpdate],
         [element, 'change', onUpdate],
-        [element, 'change', onDirty]
+        [element, 'change', onTouch]
       ])
     }
   }
 }
 
-export type { UseFieldElement }
-export { createUseFieldElement }
+export { type UseFieldElement, createUseFieldElement }

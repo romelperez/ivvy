@@ -8,26 +8,16 @@ const createFormValidator = <Data extends Record<string, unknown>>(
   props: IvvyManagerProps<Data>,
   state: IvvyManagerState<Data>
 ): (() => void) => {
-  const { language, translations } = props
-
-  interface FieldValidation {
-    name: keyof Data
-    isValid: boolean
-    errors: string[]
-  }
-
-  type MapErrorMessage = (msg: string, vars?: unknown) => string
-
-  const createMapErrorMessage = (): MapErrorMessage => {
-    if (language && translations) {
+  const createMapErrorMessage = (): ((msg: string, vars?: unknown) => string) => {
+    if (props.language && props.translations) {
       const translator = createUktiTranslator<YrelErrorTranslations>({
-        translations: translations as Record<
+        translations: props.translations as Record<
           UktiLanguages,
           Record<keyof YrelErrorTranslations, string>
         >
       })
 
-      const translate = translator(language)
+      const translate = translator(props.language)
 
       return (msg, vars) => {
         const translation = (translate[msg as keyof YrelErrorTranslations] as any)(vars as any)
@@ -41,6 +31,12 @@ const createFormValidator = <Data extends Record<string, unknown>>(
   const mapErrorMessage = createMapErrorMessage()
 
   return (): void => {
+    interface FieldValidation {
+      name: keyof Data
+      isValid: boolean
+      errors: string[]
+    }
+
     const data = get(state.data)
     const validatorsKeys = Object.keys(props.validators) as Array<keyof Data>
 
@@ -52,31 +48,31 @@ const createFormValidator = <Data extends Record<string, unknown>>(
           typeof getFieldValidator === 'function' ? getFieldValidator(data) : getFieldValidator
 
         // It is valid.
+
         if (fieldValidator === true) {
-          const validations: FieldValidation[] = [{ name: validatorKey, isValid: true, errors: [] }]
-          return validations
+          return [{ name: validatorKey, isValid: true, errors: [] }]
         }
 
         // A list of error messages.
+
         if (Array.isArray(fieldValidator)) {
           if (!fieldValidator.length) {
             throw new Error(
-              'Ivvy form manager validators must be of type "YrelSchema | data => true | [string, ...string[]]".'
+              'Ivvy form manager validators must be of type "YrelSchema | (data => true | [string, ...string[]]) | (data => YrelSchema)". Invalid empty array was provided.'
             )
           }
 
           const errors = fieldValidator.map((msg) => mapErrorMessage(msg))
-          const validations: FieldValidation[] = [{ name: validatorKey, isValid: false, errors }]
-          return validations
-        }
-
-        if (!isYrel(fieldValidator as YrelSchema)) {
-          throw new Error(
-            'Ivvy form manager validators must be of type "YrelSchema | data => true | [string, ...string[]]".'
-          )
+          return [{ name: validatorKey, isValid: false, errors }]
         }
 
         // Otherwise, it is a Yrel schema.
+
+        if (!isYrel(fieldValidator as YrelSchema)) {
+          throw new Error(
+            'Ivvy form manager validators must be of type "YrelSchema | (data => true | [string, ...string[]]) | (data => YrelSchema)".'
+          )
+        }
 
         const schemaValidation = validateYrel(fieldValidator as YrelSchema, fieldData, {
           rootKey: validatorKey as string
@@ -86,9 +82,9 @@ const createFormValidator = <Data extends Record<string, unknown>>(
           return [{ name: validatorKey, isValid: true, errors: [] }]
         }
 
-        const validations = schemaValidation.issues
+        const fieldValidations = schemaValidation.issues
           .map((issue) => {
-            const errors = issue.errors.map((err) => {
+            const errors: string[] = issue.errors.map((err) => {
               if (err[0] === 'err_custom') {
                 const [, code, vars] = err
                 return mapErrorMessage(code, vars)
@@ -96,7 +92,7 @@ const createFormValidator = <Data extends Record<string, unknown>>(
               const [code, vars] = err
               return mapErrorMessage(code, vars)
             })
-            return { ...issue, errors }
+            return { key: issue.key, errors }
           })
           .map(({ key, errors }) => {
             if (key === validatorKey) {
@@ -105,7 +101,7 @@ const createFormValidator = <Data extends Record<string, unknown>>(
             return { name: key, isValid: !!errors.length, errors }
           })
 
-        return validations
+        return fieldValidations
       })
       .flat()
 

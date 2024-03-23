@@ -17,7 +17,13 @@ export type IvvyManagerFieldsTouches<Data extends Record<string, unknown>> = Rea
 >
 
 export type IvvyManagerFieldsErrors<Data extends Record<string, unknown>> = Readonly<
-  Partial<Record<keyof Data & (string & {}), string[]>>
+  Partial<
+    // Certain Yrel validations may generate reports for object nested properties dynamically.
+    // Example: A list of elements with the key "myList" and each one with its respective input field,
+    // if there is an error in the third field, it is reported as "myList.2" in this errors report object.
+    // `UnionType | (string & {})` does the trick.
+    Record<keyof Data | (string & {}), string[]>
+  >
 >
 
 export type IvvyManagerPropsFormatters<Data extends object> = {

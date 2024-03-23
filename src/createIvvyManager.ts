@@ -1,10 +1,13 @@
 // TODO: Add support for Yrel schemas transformations/defaults from validators.
+
 // TODO: Clean up specific form and fields elements if they are unmounted.
 // The Svelte `use:action` return `destroy` function can be used and the initial
 // value should be set.
+
 // TODO: Add side-effects functionality to allow to update data values when
 // specific values change under certain conditions.
-// TODO: Add option for event types to mark an element as dirty.
+
+// TODO: Add option for event types to mark an element as touched.
 
 import { writable, get } from 'svelte/store'
 import type {
@@ -44,25 +47,22 @@ const createIvvyManager = <Data extends Record<string, unknown>>(
     const fieldsElementsValue = get(state.fieldsElements)
     const fieldsKeys = Object.keys(fieldsElementsValue) as Array<keyof Data>
 
-    fieldsKeys.forEach((name) => {
-      const elements = fieldsElementsValue[name]
-      const value = props.initialData[name]
+    for (const fieldKey of fieldsKeys) {
+      const elements = fieldsElementsValue[fieldKey]
+      const value = props.initialData[fieldKey]
 
       if (Array.isArray(elements)) {
-        setFieldElementValue(name, elements, value)
+        setFieldElementValue(fieldKey, elements, value)
       }
-    })
+    }
 
+    // Reset state.
     state.data.set(Object.freeze(props.initialData) as Data)
+    state.isTouched.set(false)
     state.touches.set(Object.freeze({}))
   }
 
   const destroy = (): void => {
-    // Reset state.
-    state.data.set(Object.freeze(props.initialData) as Data)
-    state.touches.set(Object.freeze({}))
-    state.errors.set(Object.freeze({}))
-
     // Remove HTML element event listeners.
     get(state.domListeners).forEach(([element, eventName, listener]) => {
       element.removeEventListener(eventName, listener)
@@ -71,6 +71,11 @@ const createIvvyManager = <Data extends Record<string, unknown>>(
 
     // Remove fields elements references.
     state.fieldsElements.set({})
+
+    // Reset state.
+    state.data.set(Object.freeze(props.initialData) as Data)
+    state.isTouched.set(false)
+    state.touches.set(Object.freeze({}))
   }
 
   state.data.subscribe(() => {

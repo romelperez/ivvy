@@ -5,23 +5,23 @@ const setFieldElementValue = <Data extends Record<string, unknown>>(
   elements: IvvyManagerFieldElement[],
   value: unknown
 ): void => {
-  elements.forEach((element) => {
-    const isInputCheckbox = element instanceof HTMLInputElement && element.type === 'checkbox'
-    const isInputRadio = element instanceof HTMLInputElement && element.type === 'radio'
-    const isInputFile = element instanceof HTMLInputElement && element.type === 'file'
-
+  for (const element of elements) {
+    const isInput = element instanceof HTMLInputElement
+    const isInputCheckbox = isInput && element.type === 'checkbox'
+    const isInputRadio = isInput && element.type === 'radio'
+    const isInputFile = isInput && element.type === 'file'
     const isFormElement =
       element instanceof HTMLInputElement ||
       element instanceof HTMLTextAreaElement ||
       element instanceof HTMLSelectElement
 
-    // Input checkbox.
     if (isInputCheckbox) {
       // Boolean checkbox.
       if (typeof value === 'boolean') {
         element.checked = value
-      } else if (typeof element.value === 'string' && element.value.length) {
-        // String array checkbox.
+      }
+      // String array checkbox.
+      else if (typeof element.value === 'string' && element.value.length) {
         // The check is on the element "value" attribute.
         element.checked = Array.isArray(value) ? value.includes(element.value) : false
       }
@@ -34,7 +34,7 @@ const setFieldElementValue = <Data extends Record<string, unknown>>(
         element.value = ''
       }
     }
-  })
+  }
 }
 
 export { setFieldElementValue }
