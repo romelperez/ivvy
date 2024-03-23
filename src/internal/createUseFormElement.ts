@@ -1,5 +1,5 @@
 import { get } from 'svelte/store'
-import type { IvvyManagerProps, IvvyManagerState } from '../types'
+import type { IvvyManagerProps, IvvyManagerState } from '../types.js'
 
 type UseFormElement = (formElement: HTMLFormElement) => void
 

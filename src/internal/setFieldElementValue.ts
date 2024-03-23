@@ -1,4 +1,4 @@
-import type { IvvyManagerFieldElement } from '../types'
+import type { IvvyManagerFieldElement } from '../types.js'
 
 const setFieldElementValue = <Data extends Record<string, unknown>>(
   name: keyof Data,

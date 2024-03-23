@@ -1,2 +1,2 @@
-export * from './types'
-export * from './createIvvyManager'
+export * from './types.js'
+export * from './createIvvyManager.js'

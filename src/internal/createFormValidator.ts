@@ -1,14 +1,14 @@
 import { get } from 'svelte/store'
 import { type YrelErrorTranslations, type YrelSchema, isYrel, validateYrel } from 'yrel'
-import { type UktiLocales, createUktiTranslator } from 'ukti'
+import { type UktiLanguages, createUktiTranslator } from 'ukti'
 
-import type { IvvyManagerFieldsErrors, IvvyManagerProps, IvvyManagerState } from '../types'
+import type { IvvyManagerFieldsErrors, IvvyManagerProps, IvvyManagerState } from '../types.js'
 
 const createFormValidator = <Data extends Record<string, unknown>>(
   props: IvvyManagerProps<Data>,
   state: IvvyManagerState<Data>
 ): (() => void) => {
-  const { locale, translations } = props
+  const { language, translations } = props
 
   interface FieldValidation {
     name: keyof Data
@@ -19,11 +19,12 @@ const createFormValidator = <Data extends Record<string, unknown>>(
   type MapErrorMessage = (msg: string, vars?: unknown) => string
 
   const createMapErrorMessage = (): MapErrorMessage => {
-    if (locale && translations) {
-      const translate = createUktiTranslator<YrelErrorTranslations>({
-        locale,
-        translations: translations as Record<UktiLocales, Record<keyof YrelErrorTranslations, string>>
+    if (language && translations) {
+      const translator = createUktiTranslator<YrelErrorTranslations>({
+        translations: translations as Record<UktiLanguages, Record<keyof YrelErrorTranslations, string>>
       })
+
+      const translate = translator(language)
 
       return (msg, vars) => {
         const translation = (translate[msg as keyof YrelErrorTranslations] as any)(vars as any)

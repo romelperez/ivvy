@@ -15,13 +15,13 @@ import type {
   IvvyManagerState,
   IvvyManagerProps,
   IvvyManager
-} from './types'
+} from './types.js'
 import {
   setFieldElementValue,
   createFormValidator,
   createUseFormElement,
   createUseFieldElement
-} from './internal'
+} from './internal/index.js'
 
 const createIvvyManager = <Data extends Record<string, unknown>>(
   props: IvvyManagerProps<Data>

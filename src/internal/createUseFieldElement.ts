@@ -1,7 +1,7 @@
 import { get } from 'svelte/store'
 import uniq from 'lodash/uniq'
-import type { IvvyManagerProps, IvvyManagerState, IvvyManagerFieldElement } from '../types'
-import { setFieldElementValue } from './setFieldElementValue'
+import type { IvvyManagerProps, IvvyManagerState, IvvyManagerFieldElement } from '../types.js'
+import { setFieldElementValue } from './setFieldElementValue.js'
 
 type UseFieldElement = (element: IvvyManagerFieldElement) => void
 

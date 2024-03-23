@@ -41,7 +41,6 @@
     "yrel": "2"
   },
   "devDependencies": {
-    "@build-script/typescript-transformer-append-js-extension": "^1.0.9",
     "@playwright/experimental-ct-svelte": "^1.42.1",
     "@playwright/test": "^1.42.1",
     "@types/lodash": "^4.17.0",
@@ -51,7 +50,6 @@
     "husky": "^9.0.11",
     "lodash": "^4.17.21",
     "svelte": "^4.2.12",
-    "ttypescript": "^1.5.15",
     "typescript": "5.3",
     "ukti": "^4.1.0",
     "vitest": "^1.4.0",
@@ -66,7 +64,7 @@
     "dev": "sh ./scripts/build-esm.sh --watch",
     "lint": "eslint ./src/**/*.ts",
     "lint-fix": "eslint ./src/**/*.ts --fix",
-    "test-types": "vitest typecheck",
+    "test-types": "vitest --typecheck",
     "test-unit": "vitest",
     "test-e2e": "playwright test",
     "test": "npm run clean && npm run build && npm run lint && npm run test-types -- --run && npm run test-unit -- --run && npm run test-e2e",

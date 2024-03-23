@@ -2,7 +2,7 @@
 
 import type { Writable } from 'svelte/store'
 import type { YrelErrorTranslations, YrelSchema } from 'yrel'
-import type { UktiLocales } from 'ukti'
+import type { UktiLanguages } from 'ukti'
 
 export type IvvyManagerFieldElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
 
@@ -30,8 +30,9 @@ export interface IvvyManagerProps<Data extends Record<string, unknown>> {
   formatters?: IvvyManagerPropsFormatters<Data>
   preventSubmit?: 'always' | 'onError' | false
   cleanInputFileValue?: boolean
-  locale?: UktiLocales
-  translations?: Partial<Record<UktiLocales, Partial<Record<keyof YrelErrorTranslations | (string & {}), string>>>>
+  language?: UktiLanguages
+  // TODO: translations?: Partial<Record<UktiLanguages, Partial<Record<keyof YrelErrorTranslations | (string & {}), string>>>>
+  translations?: Partial<Record<UktiLanguages, Partial<Record<keyof YrelErrorTranslations, string>>>>
   onUpdate?: (data: Data) => void
   onSubmit?: (data: Data, event: Event) => void
 }
