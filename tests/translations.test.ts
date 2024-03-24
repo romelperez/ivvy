@@ -42,7 +42,7 @@ test('Should accept partial Yrel error translations and report data errors if in
   })
 })
 
-test('Should accept custom error messages in translations', () => {
+test('Should accept custom error messages in translations and report data errors if invalid', () => {
   type Data = {
     name: string
     age: number

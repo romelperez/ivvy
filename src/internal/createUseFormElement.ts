@@ -1,13 +1,13 @@
 import { get } from 'svelte/store'
-import type { IvvyManagerProps, IvvyManagerState } from '../types.js'
+import type { IvvyManagerPropsInternal, IvvyManagerState } from '../types.js'
 
 type UseFormElement = (formElement: HTMLFormElement) => void
 
 const createUseFormElement = <Data extends Record<string, unknown>>(
-  props: IvvyManagerProps<Data>,
+  props: IvvyManagerPropsInternal<Data>,
   state: IvvyManagerState<Data>
 ): UseFormElement => {
-  const { initialData, preventSubmit = 'onError', onSubmit } = props
+  const { initialData, preventSubmit, onSubmit } = props
 
   return (formElement) => {
     const onFormSubmit = (event: Event): void => {

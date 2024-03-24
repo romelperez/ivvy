@@ -59,6 +59,18 @@ export interface IvvyManagerProps<
   onSubmit?: (data: Data, event: Event) => void
 }
 
+export type IvvyManagerPropsInternal<
+  Data extends Record<string, unknown>,
+  Languages extends string = UktiLanguages,
+  LanguageDefault extends string = 'en'
+> = IvvyManagerProps<Data, Languages, LanguageDefault> &
+  Required<
+    Pick<
+      IvvyManagerProps<Data, Languages, LanguageDefault>,
+      'preventSubmit' | 'cleanInputFileValue' | 'language'
+    >
+  >
+
 export type IvvyManagerState<Data extends Record<string, unknown>> = {
   domListeners: Writable<Array<[HTMLElement, string, (event: Event) => void]>>
   fieldsElements: Writable<Partial<Record<keyof Data, IvvyManagerFieldElement[]>>>

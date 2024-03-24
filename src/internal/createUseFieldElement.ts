@@ -1,11 +1,15 @@
 import { get } from 'svelte/store'
-import type { IvvyManagerProps, IvvyManagerState, IvvyManagerFieldElement } from '../types.js'
+import type {
+  IvvyManagerPropsInternal,
+  IvvyManagerState,
+  IvvyManagerFieldElement
+} from '../types.js'
 import { setFieldElementValue } from './setFieldElementValue.js'
 
 type UseFieldElement = (element: IvvyManagerFieldElement) => void
 
 const createUseFieldElement = <Data extends Record<string, unknown>>(
-  props: IvvyManagerProps<Data>,
+  props: IvvyManagerPropsInternal<Data>,
   state: IvvyManagerState<Data>
 ): UseFieldElement => {
   return (element: IvvyManagerFieldElement): void => {

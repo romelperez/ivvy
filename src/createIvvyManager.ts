@@ -23,6 +23,7 @@ import type {
   IvvyManagerFieldsErrors,
   IvvyManagerState,
   IvvyManagerProps,
+  IvvyManagerPropsInternal,
   IvvyManager
 } from './types.js'
 import {
@@ -33,8 +34,15 @@ import {
 } from './internal/index.js'
 
 const createIvvyManager = <Data extends Record<string, unknown>>(
-  props: IvvyManagerProps<Data>
+  providedProps: IvvyManagerProps<Data>
 ): IvvyManager<Data> => {
+  const props: IvvyManagerPropsInternal<Data> = {
+    preventSubmit: 'onError',
+    cleanInputFileValue: true,
+    language: 'en',
+    ...providedProps
+  }
+
   const state: IvvyManagerState<Data> = Object.freeze({
     domListeners: writable<Array<[HTMLElement, string, (event: Event) => void]>>([]),
     fieldsElements: writable<Partial<Record<keyof Data, IvvyManagerFieldElement[]>>>({}),
