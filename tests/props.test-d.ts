@@ -17,8 +17,13 @@ test('Should require initialData values or nulls/undefineds', () => {
     validators: { name: y.string(), age: y.number(), married: y.boolean() }
   })
   createIvvyManager<Data>({
-    // @ts-expect-error test
-    initialData: { name: 21, age: 'yrel', married: false },
+    initialData: {
+      // @ts-expect-error test
+      name: 21,
+      // @ts-expect-error test
+      age: 'yrel',
+      married: false
+    },
     validators: { name: y.string(), age: y.number(), married: y.boolean() }
   })
   createIvvyManager<Data>({
@@ -35,12 +40,18 @@ test('Should require all data props on initialData', () => {
   }
   createIvvyManager<Data>({
     // @ts-expect-error test
-    initialData: { name: 'ivvy', married: false },
+    initialData: {
+      name: 'ivvy',
+      married: false
+    },
     validators: { name: y.string(), age: y.number(), married: y.boolean() }
   })
   createIvvyManager<Data>({
     // @ts-expect-error test
-    initialData: { name: 'ivvy', age: 21 },
+    initialData: {
+      name: 'ivvy',
+      age: 21
+    },
     validators: { name: y.string(), age: y.number(), married: y.boolean() }
   })
   createIvvyManager<Data>({

@@ -3,6 +3,23 @@ import { get } from 'svelte/store'
 import { type InferYrel, y } from 'yrel'
 import { createIvvyManager } from '../'
 
+test('Should initially be valid if no validators are provided', () => {
+  type Data = {
+    name: string
+    age: number
+    married: boolean
+  }
+  const manager = createIvvyManager<Data>({
+    initialData: {
+      name: 'ivvy',
+      age: 21,
+      married: false
+    }
+  })
+  expect(get(manager.isValid)).toBe(true)
+  expect(get(manager.errors)).toEqual({})
+})
+
 test('Should accept inline-validators', () => {
   type Data = {
     name: string

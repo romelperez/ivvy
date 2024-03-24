@@ -1,7 +1,6 @@
-import { type YrelErrorTranslations } from 'yrel'
-import { type UktiTranslations } from 'ukti'
+import { type IvvyManagerPropsTranslations } from '../../../'
 
-export const translations: UktiTranslations<YrelErrorTranslations> = {
+export const translations: IvvyManagerPropsTranslations = {
   en: {
     err_unknown: 'This field is required.',
     err_boolean: 'This field should be a boolean.',

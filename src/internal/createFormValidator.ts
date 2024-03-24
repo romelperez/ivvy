@@ -9,15 +9,22 @@ const createFormValidator = <Data extends Record<string, unknown>>(
   state: IvvyManagerState<Data>
 ): (() => void) => {
   const createMapErrorMessage = (): ((msg: string, vars?: unknown) => string) => {
-    if (props.language && props.translations) {
+    const { language = 'en', translations } = props
+
+    if (translations) {
+      if (translations[language] === null || typeof translations[language] !== 'object') {
+        throw new Error('Ivvy requires translation content for the provided language to use.')
+      }
+
       const translator = createUktiTranslator<YrelErrorTranslations>({
-        translations: props.translations as Record<
+        languageDefault: language as 'en',
+        translations: translations as Record<
           UktiLanguages,
           Record<keyof YrelErrorTranslations, string>
         >
       })
 
-      const translate = translator(props.language)
+      const translate = translator(language)
 
       return (msg, vars) => {
         const translation = (translate[msg as keyof YrelErrorTranslations] as any)(vars as any)
@@ -37,13 +44,21 @@ const createFormValidator = <Data extends Record<string, unknown>>(
       errors: string[]
     }
 
+    const { validators } = props
+
+    if (!validators) {
+      state.isValid.set(true)
+      state.errors.set(Object.freeze({}))
+      return
+    }
+
     const data = get(state.data)
-    const validatorsKeys = Object.keys(props.validators) as Array<keyof Data>
+    const validatorsKeys = Object.keys(validators) as Array<keyof Data>
 
     const fieldsValidations: FieldValidation[] = validatorsKeys
       .map((validatorKey) => {
         const fieldData = data[validatorKey]
-        const getFieldValidator = props.validators[validatorKey]
+        const getFieldValidator = validators[validatorKey]
         const fieldValidator =
           typeof getFieldValidator === 'function' ? getFieldValidator(data) : getFieldValidator
 
