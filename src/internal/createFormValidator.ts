@@ -3,10 +3,15 @@ import { type YrelErrorTranslations, type YrelSchema, isYrel, validateYrel } fro
 import { type UktiLanguages, createUktiTranslator } from 'ukti'
 
 import type {
+  IvvyManagerPropsValidators,
   IvvyManagerFieldsErrors,
   IvvyManagerPropsInternal,
   IvvyManagerState
 } from '../types.js'
+
+type Writeable<T> = {
+  -readonly [P in keyof T]: T[P]
+}
 
 const createFormValidator = <Data extends Record<string, unknown>>(
   props: IvvyManagerPropsInternal<Data>,
@@ -42,19 +47,8 @@ const createFormValidator = <Data extends Record<string, unknown>>(
   const mapErrorMessage = createMapErrorMessage()
 
   return (): void => {
-    type Writeable<T> = {
-      -readonly [P in keyof T]: T[P]
-    }
-
-    interface FieldValidation {
-      name: keyof Data
-      isValid: boolean
-      errors: string[]
-    }
-
-    const { validators, formatters } = props
+    const { formatters, validators } = props
     const dataNew: Writeable<Data> = { ...get(state.sourceData) }
-    const validatorsKeys = Object.keys(validators) as Array<keyof Data>
 
     if (formatters) {
       const formattersKeys = Object.keys(formatters) as Array<keyof Data>
@@ -68,10 +62,49 @@ const createFormValidator = <Data extends Record<string, unknown>>(
       }
     }
 
+    if (isYrel(validators as YrelSchema)) {
+      const schema = validators as YrelSchema<Data>
+      const validation = validateYrel(schema, dataNew)
+
+      state.isValid.set(validation.isValid)
+
+      if (validation.isValid) {
+        state.errors.set(Object.freeze({}))
+        state.data.set(Object.freeze(validation.data))
+      } else {
+        const newErrorsValue = validation.issues
+          .map(({ key, errors }) => ({
+            [key]: errors.map((err) => {
+              if (err[0] === 'err_custom') {
+                const [, code, vars] = err
+                return mapErrorMessage(code, vars)
+              }
+              const [code, vars] = err
+              return mapErrorMessage(code, vars)
+            })
+          }))
+          .reduce((total, item) => ({ ...total, ...item }), {})
+
+        state.errors.set(Object.freeze(newErrorsValue) as unknown as IvvyManagerFieldsErrors<Data>)
+        state.data.set(Object.freeze(dataNew))
+      }
+
+      return
+    }
+
+    const validatorsObject = validators as Exclude<IvvyManagerPropsValidators<Data>, YrelSchema>
+    const validatorsKeys = Object.keys(validators) as Array<keyof Data>
+
+    interface FieldValidation {
+      name: keyof Data
+      isValid: boolean
+      errors: string[]
+    }
+
     const fieldsValidations: FieldValidation[] = validatorsKeys
       .map((validatorKey) => {
         const fieldDOMData = dataNew[validatorKey]
-        const getFieldValidator = validators[validatorKey]
+        const getFieldValidator = validatorsObject[validatorKey]
         const fieldValidator =
           typeof getFieldValidator === 'function' ? getFieldValidator(dataNew) : getFieldValidator
 
@@ -94,7 +127,7 @@ const createFormValidator = <Data extends Record<string, unknown>>(
           return [{ name: validatorKey, isValid: false, errors }]
         }
 
-        // Otherwise, it is a Yrel schema.
+        // Otherwise, it should be a Yrel schema.
 
         if (!isYrel(fieldValidator as YrelSchema)) {
           throw new Error(
@@ -107,6 +140,7 @@ const createFormValidator = <Data extends Record<string, unknown>>(
         })
 
         if (schemaValidation.isValid) {
+          dataNew[validatorKey] = schemaValidation.data
           return [{ name: validatorKey, isValid: true, errors: [] }]
         }
 
@@ -122,18 +156,15 @@ const createFormValidator = <Data extends Record<string, unknown>>(
             })
             return { key: issue.key, errors }
           })
-          .map(({ key, errors }) => {
-            if (key === validatorKey) {
-              return { name: key, isValid: schemaValidation.isValid, errors }
-            }
-            return { name: key, isValid: !!errors.length, errors }
-          })
+          .map(({ key, errors }) => ({
+            name: key,
+            isValid: key === validatorKey ? false : !!errors.length,
+            errors
+          }))
 
         return fieldValidations
       })
       .flat()
-
-    state.data.set(Object.freeze(dataNew))
 
     const areAllFieldsValid = fieldsValidations.every((validation) => validation.isValid)
 
@@ -149,6 +180,8 @@ const createFormValidator = <Data extends Record<string, unknown>>(
     } else {
       state.errors.set(Object.freeze({}))
     }
+
+    state.data.set(Object.freeze(dataNew))
   }
 }
 

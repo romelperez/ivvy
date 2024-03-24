@@ -1,5 +1,3 @@
-// TODO: Add support for Yrel object schema as validators prop.
-
 // TODO: Add support for Yrel object schema as validators prop with validation
 // reports inside children properties such as comparison of password and
 // passwordConfirmation values and report in each of them.

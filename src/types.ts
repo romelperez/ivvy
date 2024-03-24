@@ -30,9 +30,13 @@ export type IvvyManagerPropsFormatters<Data extends Record<string, unknown>> = {
   [P in keyof Data]?: (value: unknown, data: Data) => Data[P]
 }
 
-export type IvvyManagerPropsValidators<Data extends Record<string, unknown>> = {
-  [P in keyof Data]?: YrelSchema<Data[P]> | ((data: Data) => true | string[] | YrelSchema<Data[P]>)
-}
+export type IvvyManagerPropsValidators<Data extends Record<string, unknown>> =
+  | YrelSchema
+  | {
+      [P in keyof Data]?:
+        | YrelSchema<Data[P]>
+        | ((data: Data) => true | string[] | YrelSchema<Data[P]>)
+    }
 
 export type IvvyManagerPropsTranslations<
   Languages extends string = UktiLanguages,

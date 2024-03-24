@@ -88,7 +88,7 @@ test('Should accept yrel object schema as validators', () => {
       age: 21,
       married: false
     },
-    validators: schema.shape
+    validators: schema
   })
   expect(get(manager.isValid)).toBe(true)
   expect(get(manager.errors)).toEqual({})

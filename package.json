@@ -52,7 +52,7 @@
     "typescript": "5.2",
     "ukti": "^4.1.1",
     "vitest": "^1.4.0",
-    "yrel": "^2.1.6"
+    "yrel": "^2.2.0"
   },
   "scripts": {
     "prepare": "husky && playwright install --with-deps",
