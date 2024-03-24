@@ -29,7 +29,7 @@ test('Should accept partial Yrel error translations and report data errors if in
     }
   })
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  manager.data.set({
+  manager.setData({
     name: 1,
     age: 4,
     married: 'false'
@@ -67,7 +67,7 @@ test('Should accept custom error messages in translations and report data errors
     }
   })
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  manager.data.set({
+  manager.setData({
     name: 1,
     age: 4,
     married: ''

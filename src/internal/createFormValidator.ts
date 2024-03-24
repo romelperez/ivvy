@@ -42,29 +42,38 @@ const createFormValidator = <Data extends Record<string, unknown>>(
   const mapErrorMessage = createMapErrorMessage()
 
   return (): void => {
+    type Writeable<T> = {
+      -readonly [P in keyof T]: T[P]
+    }
+
     interface FieldValidation {
       name: keyof Data
       isValid: boolean
       errors: string[]
     }
 
-    const { validators } = props
-
-    if (!validators) {
-      state.isValid.set(true)
-      state.errors.set(Object.freeze({}))
-      return
-    }
-
-    const data = get(state.data)
+    const { validators, formatters } = props
+    const dataNew: Writeable<Data> = { ...get(state.sourceData) }
     const validatorsKeys = Object.keys(validators) as Array<keyof Data>
+
+    if (formatters) {
+      const formattersKeys = Object.keys(formatters) as Array<keyof Data>
+
+      for (const formatterKey of formattersKeys) {
+        const formatter = formatters[formatterKey]
+
+        if (formatter) {
+          dataNew[formatterKey] = formatter(dataNew[formatterKey], dataNew)
+        }
+      }
+    }
 
     const fieldsValidations: FieldValidation[] = validatorsKeys
       .map((validatorKey) => {
-        const fieldData = data[validatorKey]
+        const fieldDOMData = dataNew[validatorKey]
         const getFieldValidator = validators[validatorKey]
         const fieldValidator =
-          typeof getFieldValidator === 'function' ? getFieldValidator(data) : getFieldValidator
+          typeof getFieldValidator === 'function' ? getFieldValidator(dataNew) : getFieldValidator
 
         // It is valid.
 
@@ -93,7 +102,7 @@ const createFormValidator = <Data extends Record<string, unknown>>(
           )
         }
 
-        const schemaValidation = validateYrel(fieldValidator as YrelSchema, fieldData, {
+        const schemaValidation = validateYrel(fieldValidator as YrelSchema, fieldDOMData, {
           rootKey: validatorKey as string
         })
 
@@ -123,6 +132,8 @@ const createFormValidator = <Data extends Record<string, unknown>>(
         return fieldValidations
       })
       .flat()
+
+    state.data.set(Object.freeze(dataNew))
 
     const areAllFieldsValid = fieldsValidations.every((validation) => validation.isValid)
 

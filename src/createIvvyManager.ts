@@ -40,12 +40,14 @@ const createIvvyManager = <Data extends Record<string, unknown>>(
     preventSubmit: 'onError',
     cleanInputFileValue: true,
     language: 'en',
+    validators: {},
     ...providedProps
   }
 
   const state: IvvyManagerState<Data> = Object.freeze({
     domListeners: writable<Array<[HTMLElement, string, (event: Event) => void]>>([]),
     fieldsElements: writable<Partial<Record<keyof Data, IvvyManagerFieldElement[]>>>({}),
+    sourceData: writable<IvvyManagerFieldsData<Data>>(Object.freeze(props.initialData) as Data),
     isValid: writable(false),
     isTouched: writable(false),
     data: writable<IvvyManagerFieldsData<Data>>(Object.freeze(props.initialData) as Data),
@@ -71,7 +73,7 @@ const createIvvyManager = <Data extends Record<string, unknown>>(
     }
 
     // Reset state.
-    state.data.set(Object.freeze(props.initialData) as Data)
+    state.sourceData.set(Object.freeze(props.initialData) as Data)
     state.isTouched.set(false)
     state.touches.set(Object.freeze({}))
   }
@@ -87,14 +89,10 @@ const createIvvyManager = <Data extends Record<string, unknown>>(
     state.fieldsElements.set({})
 
     // Reset state.
-    state.data.set(Object.freeze(props.initialData) as Data)
+    state.sourceData.set(Object.freeze(props.initialData) as Data)
     state.isTouched.set(false)
     state.touches.set(Object.freeze({}))
   }
-
-  state.data.subscribe(() => {
-    validate()
-  })
 
   const setData = (newData: Partial<Data>): void => {
     const names = Object.keys(newData) as Array<keyof Data>
@@ -109,8 +107,16 @@ const createIvvyManager = <Data extends Record<string, unknown>>(
       }
     }
 
-    state.data.update((data) => ({ ...data, ...newData }))
+    state.sourceData.update((data) => Object.freeze({ ...data, ...newData }))
   }
+
+  state.sourceData.subscribe(() => {
+    validate()
+  })
+
+  state.data.subscribe(() => {
+    props.onUpdate?.(get(state.data))
+  })
 
   const formManager = {
     isValid: state.isValid,

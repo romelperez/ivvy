@@ -86,18 +86,13 @@ const createUseFieldElement = <Data extends Record<string, unknown>>(
         valueNewRaw = Array.from(element.files ?? [])
       }
 
-      const formatter = props.formatters?.[name]
-      const valueNew = formatter ? formatter(valueNewRaw, get(state.data)) : valueNewRaw
-
       // After input file has selected some files, reset the value
       // so it can select even the same files again.
       if (props.cleanInputFileValue && isInputFile) {
         element.value = ''
       }
 
-      state.data.update((data) => Object.freeze({ ...data, [name]: valueNew }))
-
-      props.onUpdate?.(get(state.data))
+      state.sourceData.update((data) => Object.freeze({ ...data, [name]: valueNewRaw }))
     }
 
     const onTouch = (): void => {
