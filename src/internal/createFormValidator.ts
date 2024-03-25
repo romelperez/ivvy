@@ -9,7 +9,7 @@ import type {
   IvvyManagerState
 } from '../types.js'
 
-type Writeable<T> = {
+type ObjectWriteable<T> = {
   -readonly [P in keyof T]: T[P]
 }
 
@@ -47,20 +47,8 @@ const createFormValidator = <Data extends Record<string, unknown>>(
   const mapErrorMessage = createMapErrorMessage()
 
   return (): void => {
-    const { formatters, validators } = props
-    const dataNew: Writeable<Data> = { ...get(state.sourceData) }
-
-    if (formatters) {
-      const formattersKeys = Object.keys(formatters) as Array<keyof Data>
-
-      for (const formatterKey of formattersKeys) {
-        const formatter = formatters[formatterKey]
-
-        if (formatter) {
-          dataNew[formatterKey] = formatter(dataNew[formatterKey], dataNew)
-        }
-      }
-    }
+    const { validators } = props
+    const dataNew: ObjectWriteable<Data> = { ...get(state.sourceData) }
 
     if (isYrel(validators)) {
       const schema = validators as YrelSchema<Data>

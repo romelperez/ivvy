@@ -1,3 +1,5 @@
+// TODO: Add support for select multiple element.
+
 // TODO: Clean up specific form and fields elements if they are unmounted.
 // The Svelte `use:action` return `destroy` function can be used and the initial
 // value should be set.
@@ -86,20 +88,23 @@ const createIvvyManager = <Data extends Record<string, unknown>>(
     state.touches.set(Object.freeze({}))
   }
 
-  const setData = (newData: Partial<Data>): void => {
-    const names = Object.keys(newData) as Array<keyof Data>
+  const setData = (newData: { [P in keyof Data]?: Data[P] | undefined | null }): void => {
+    const dataOriginal = get(state.data)
+
+    state.sourceData.set(Object.freeze({ ...dataOriginal, ...newData }))
+
+    const dataUpdated = get(state.data)
+    const names = Object.keys(props.initialData) as Array<keyof Data>
     const fieldsElementsValue = get(state.fieldsElements)
 
     for (const name of names) {
-      const value = newData[name]
+      const value = dataUpdated[name]
       const fieldElements = fieldsElementsValue[name]
 
       if (fieldElements) {
         setFieldElementValue<Data>(name, fieldElements, value)
       }
     }
-
-    state.sourceData.update((data) => Object.freeze({ ...data, ...newData }))
   }
 
   state.sourceData.subscribe(() => {

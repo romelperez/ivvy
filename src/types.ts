@@ -80,7 +80,7 @@ export type IvvyManagerState<Data extends Record<string, unknown>> = {
   fieldsElements: Writable<Partial<Record<keyof Data, IvvyManagerFieldElement[]>>>
   /**
    * The form data directly from the form DOM elements or as provided by the user.
-   * This data is before the "formatters" and Yrel validation transformations.
+   * This data is after "formatters" and before Yrel validation transformations.
    */
   sourceData: Writable<IvvyManagerFieldsData<Data>>
   /**
@@ -141,9 +141,9 @@ export interface IvvyManager<Data extends Record<string, unknown>> {
    */
   destroy: () => void
   /**
-   * Partially update the form data.
+   * Partially update the form data, even with invalid data.
    */
-  setData: (data: Partial<Data>) => void
+  setData: (data: { [P in keyof Data]?: Data[P] | undefined | null }) => void
   /**
    * Add the HTMLFormElement to the manager. It will get a submit DOM event listener.
    * @param element HTMLFormElement

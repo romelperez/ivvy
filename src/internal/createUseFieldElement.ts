@@ -92,7 +92,10 @@ const createUseFieldElement = <Data extends Record<string, unknown>>(
         element.value = ''
       }
 
-      state.sourceData.update((data) => Object.freeze({ ...data, [name]: valueNewRaw }))
+      const fieldFormatter = props.formatters?.[name]
+      const valueNew = fieldFormatter ? fieldFormatter(valueNewRaw, get(state.data)) : valueNewRaw
+
+      state.sourceData.update((data) => Object.freeze({ ...data, [name]: valueNew }))
     }
 
     const onTouch = (): void => {
