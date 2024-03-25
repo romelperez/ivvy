@@ -3,14 +3,15 @@ import type {
   IvvyManagerPropsInternal,
   IvvyManagerState,
   IvvyUseHookOutput,
-  IvvyManagerFieldElement
+  IvvyFieldElement
 } from '../types.js'
+import { getFieldElementValue } from './getFieldElementValue.js'
 import { setFieldElementValue } from './setFieldElementValue.js'
 
 const createUseFieldElement = <Data extends Record<string, unknown>>(
   props: IvvyManagerPropsInternal<Data>,
   state: IvvyManagerState<Data>
-): ((element: IvvyManagerFieldElement) => IvvyUseHookOutput) => {
+): ((element: IvvyFieldElement) => IvvyUseHookOutput) => {
   return (element) => {
     const name = element.getAttribute('name') as keyof Data
 
@@ -20,18 +21,18 @@ const createUseFieldElement = <Data extends Record<string, unknown>>(
       )
     }
 
+    const dataCurrent = get(state.data)
     const fieldsElements = get(state.fieldsElements)
     const fieldElementsCurrent = fieldsElements[name]
     const fieldElementsNew = fieldElementsCurrent ? [...fieldElementsCurrent, element] : [element]
 
     state.fieldsElements.update((value) => ({ ...value, [name]: fieldElementsNew }))
 
-    setFieldElementValue(name, fieldElementsNew, get(state.data)[name])
+    setFieldElementValue(fieldElementsNew, dataCurrent[name])
 
     const isInput = element instanceof HTMLInputElement
     const isInputCheckbox = isInput && element.type === 'checkbox'
     const isInputRadio = isInput && element.type === 'radio'
-    const isInputNumber = isInput && element.type === 'number'
     const isInputFile = isInput && element.type === 'file'
     const isSelect = element instanceof HTMLSelectElement
     const isFormElement =
@@ -40,47 +41,8 @@ const createUseFieldElement = <Data extends Record<string, unknown>>(
       element instanceof HTMLSelectElement
 
     const onUpdate = (): void => {
-      let valueNewRaw: unknown = element.value
-
-      if (isInputCheckbox) {
-        // Get the actual HTML attribute value.
-        // `element.value` will provide a calculated value which might be different.
-        const inputCheckboxValue = element.getAttribute('value')
-
-        // String array checkbox.
-        // If the input is checkbox and has a "value" attribute with data,
-        // then this field value is of type "string[]", where if the checkbox
-        // is checked, the correponding element value string will be in the array,
-        // otherwise, the element value string is removed from it.
-        if (typeof inputCheckboxValue === 'string' && inputCheckboxValue.length) {
-          const dataFieldValueCurrent = get(state.data)[name]
-
-          if (
-            dataFieldValueCurrent !== null &&
-            dataFieldValueCurrent !== undefined &&
-            !Array.isArray(dataFieldValueCurrent)
-          ) {
-            console.error(
-              'Ivvy, if an input type checkbox has the attribute value with text, the corresponding form manager data type must be an array of strings or nullish.'
-            )
-          }
-
-          valueNewRaw = Array.isArray(dataFieldValueCurrent) ? [...dataFieldValueCurrent] : []
-
-          if (element.checked) {
-            valueNewRaw = Array.from(new Set([...(valueNewRaw as string[]), inputCheckboxValue]))
-          } else {
-            valueNewRaw = (valueNewRaw as string[]).filter((item) => item !== element.value)
-          }
-        } else {
-          // Boolean checkbox.
-          valueNewRaw = element.checked
-        }
-      } else if (isInputNumber) {
-        valueNewRaw = element.valueAsNumber
-      } else if (isInputFile) {
-        valueNewRaw = Array.from(element.files ?? [])
-      }
+      const data = get(state.data)
+      const valueRaw = getFieldElementValue(element, data[name])
 
       // After input file has selected some files, reset the value
       // so it can select even the same files again.
@@ -89,9 +51,9 @@ const createUseFieldElement = <Data extends Record<string, unknown>>(
       }
 
       const fieldFormatter = props.formatters?.[name]
-      const valueNew = fieldFormatter ? fieldFormatter(valueNewRaw, get(state.data)) : valueNewRaw
+      const value = fieldFormatter ? fieldFormatter(valueRaw, data) : valueRaw
 
-      state.sourceData.update((data) => Object.freeze({ ...data, [name]: valueNew }))
+      state.sourceData.update((data) => Object.freeze({ ...data, [name]: value }))
     }
 
     const onTouch = (): void => {

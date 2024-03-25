@@ -68,7 +68,7 @@ test('Should destroy form by reseting data and removing DOM event listeners', ()
 
   expect(get(manager.isValid)).toBe(true)
   expect(get(manager.errors)).toEqual({})
-  expect(get(manager.data)).toEqual({ name: 'ivvy', age: 21, married: false })
+  expect(get(manager.data)).toEqual({ name: 'ivvy', age: 0, married: false })
   expect(get(manager.isTouched)).toBe(false)
   expect(get(manager.touches)).toEqual({})
   expect(onSubmit).toHaveBeenCalledTimes(1)

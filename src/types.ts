@@ -4,7 +4,14 @@ import type { Writable } from 'svelte/store'
 import type { YrelErrorTranslations, YrelSchema } from 'yrel'
 import type { UktiLanguages } from 'ukti'
 
-export type IvvyManagerFieldElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+export type IvvyFieldElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+
+export type IvvyFieldValue =
+  | boolean
+  | number
+  | string
+  | File
+  | Array<boolean | number | string | File>
 
 export type IvvyManagerFieldsData<Data extends Record<string, unknown>> = Readonly<Data>
 
@@ -77,7 +84,7 @@ export type IvvyManagerPropsInternal<
 
 export type IvvyManagerState<Data extends Record<string, unknown>> = {
   domListeners: Writable<Array<[HTMLElement, string, (event: Event) => void]>>
-  fieldsElements: Writable<Partial<Record<keyof Data, IvvyManagerFieldElement[]>>>
+  fieldsElements: Writable<Partial<Record<keyof Data, IvvyFieldElement[]>>>
   formElement: Writable<HTMLFormElement | null>
   /**
    * The form data directly from the form DOM elements or as provided by the user.
@@ -160,5 +167,5 @@ export interface IvvyManager<Data extends Record<string, unknown>> {
    * DOM event listeners to listen to user input for data updates.
    * @param element The field form element. e.g. HTMLInputElement.
    */
-  useFieldElement: (element: IvvyManagerFieldElement) => IvvyUseHookOutput
+  useFieldElement: (element: IvvyFieldElement) => IvvyUseHookOutput
 }

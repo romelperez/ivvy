@@ -1,5 +1,3 @@
-// TODO: Add support for select multiple element.
-
 // TODO: Add side-effects functionality to allow to update data values when
 // specific values change under certain conditions.
 
@@ -7,7 +5,7 @@
 
 import { writable, get } from 'svelte/store'
 import type {
-  IvvyManagerFieldElement,
+  IvvyFieldElement,
   IvvyManagerFieldsData,
   IvvyManagerFieldsTouches,
   IvvyManagerFieldsErrors,
@@ -36,7 +34,7 @@ const createIvvyManager = <Data extends Record<string, unknown>>(
 
   const state: IvvyManagerState<Data> = Object.freeze({
     domListeners: writable<Array<[HTMLElement, string, (event: Event) => void]>>([]),
-    fieldsElements: writable<Partial<Record<keyof Data, IvvyManagerFieldElement[]>>>({}),
+    fieldsElements: writable<Partial<Record<keyof Data, IvvyFieldElement[]>>>({}),
     formElement: writable<HTMLFormElement | null>(null),
     sourceData: writable<IvvyManagerFieldsData<Data>>(Object.freeze(props.initialData) as Data),
     isValid: writable(false),
@@ -58,7 +56,39 @@ const createIvvyManager = <Data extends Record<string, unknown>>(
     state.touches.set(Object.freeze({}))
   }
 
+  const setData = (newData: { [P in keyof Data]?: Data[P] | undefined | null }): void => {
+    state.sourceData.set(Object.freeze({ ...get(state.data), ...newData }))
+  }
+
+  const unsubscribeValidation = state.sourceData.subscribe(() => {
+    validate()
+  })
+
+  const unsubscribeUpdates = state.data.subscribe(() => {
+    const dataNew = get(state.data)
+    const fieldsElementsValue = get(state.fieldsElements)
+    const fieldsKeys = Object.keys(fieldsElementsValue) as Array<keyof Data>
+
+    for (const fieldKey of fieldsKeys) {
+      const elements = fieldsElementsValue[fieldKey]
+      const value = dataNew[fieldKey]
+
+      if (Array.isArray(elements)) {
+        setFieldElementValue(elements, value)
+      }
+    }
+
+    if (isOnUpdateFirstCall) {
+      isOnUpdateFirstCall = false
+    } else {
+      props.onUpdate?.(get(state.data))
+    }
+  })
+
   const destroy = (): void => {
+    unsubscribeValidation()
+    unsubscribeUpdates()
+
     // Remove HTML element event listeners.
     get(state.domListeners).forEach(([element, eventName, listener]) => {
       element.removeEventListener(eventName, listener)
@@ -73,49 +103,6 @@ const createIvvyManager = <Data extends Record<string, unknown>>(
     state.isTouched.set(false)
     state.touches.set(Object.freeze({}))
   }
-
-  const setData = (newData: { [P in keyof Data]?: Data[P] | undefined | null }): void => {
-    const dataOriginal = get(state.data)
-
-    state.sourceData.set(Object.freeze({ ...dataOriginal, ...newData }))
-
-    const dataUpdated = get(state.data)
-    const names = Object.keys(props.initialData) as Array<keyof Data>
-    const fieldsElementsValue = get(state.fieldsElements)
-
-    for (const name of names) {
-      const value = dataUpdated[name]
-      const fieldElements = fieldsElementsValue[name]
-
-      if (fieldElements) {
-        setFieldElementValue<Data>(name, fieldElements, value)
-      }
-    }
-  }
-
-  state.sourceData.subscribe(() => {
-    validate()
-  })
-
-  state.data.subscribe(() => {
-    const fieldsElementsValue = get(state.fieldsElements)
-    const fieldsKeys = Object.keys(fieldsElementsValue) as Array<keyof Data>
-
-    for (const fieldKey of fieldsKeys) {
-      const elements = fieldsElementsValue[fieldKey]
-      const value = props.initialData[fieldKey]
-
-      if (Array.isArray(elements)) {
-        setFieldElementValue(fieldKey, elements, value)
-      }
-    }
-
-    if (isOnUpdateFirstCall) {
-      isOnUpdateFirstCall = false
-    } else {
-      props.onUpdate?.(get(state.data))
-    }
-  })
 
   const formManager = {
     isValid: state.isValid,
