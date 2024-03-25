@@ -62,7 +62,7 @@ const createFormValidator = <Data extends Record<string, unknown>>(
       }
     }
 
-    if (isYrel(validators as YrelSchema)) {
+    if (isYrel(validators)) {
       const schema = validators as YrelSchema<Data>
       const validation = validateYrel(schema, dataNew)
 
@@ -129,22 +129,22 @@ const createFormValidator = <Data extends Record<string, unknown>>(
 
         // Otherwise, it should be a Yrel schema.
 
-        if (!isYrel(fieldValidator as YrelSchema)) {
+        if (!isYrel(fieldValidator)) {
           throw new Error(
             'Ivvy form manager validators must be of type "YrelSchema | (data => true | [string, ...string[]]) | (data => YrelSchema)".'
           )
         }
 
-        const schemaValidation = validateYrel(fieldValidator as YrelSchema, fieldDOMData, {
+        const validation = validateYrel(fieldValidator as YrelSchema, fieldDOMData, {
           rootKey: validatorKey as string
         })
 
-        if (schemaValidation.isValid) {
-          dataNew[validatorKey] = schemaValidation.data
+        if (validation.isValid) {
+          dataNew[validatorKey] = validation.data
           return [{ name: validatorKey, isValid: true, errors: [] }]
         }
 
-        const fieldValidations = schemaValidation.issues
+        const fieldValidations = validation.issues
           .map((issue) => {
             const errors: string[] = issue.errors.map((err) => {
               if (err[0] === 'err_custom') {
@@ -158,7 +158,7 @@ const createFormValidator = <Data extends Record<string, unknown>>(
           })
           .map(({ key, errors }) => ({
             name: key,
-            isValid: key === validatorKey ? false : !!errors.length,
+            isValid: false,
             errors
           }))
 
