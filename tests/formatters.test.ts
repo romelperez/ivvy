@@ -20,8 +20,20 @@ test('Should accept formatters to pre-process data source updates', () => {
     }
   })
   expect(get(manager.isValid)).toBe(true)
+  expect(get(manager.errors)).toEqual({})
   expect(get(manager.data)).toEqual({
     name: 'IVVY',
+    age: 42,
+    married: false
+  })
+
+  manager.setData({
+    name: 'iv'
+  })
+  expect(get(manager.isValid)).toBe(true)
+  expect(get(manager.errors)).toEqual({})
+  expect(get(manager.data)).toEqual({
+    name: 'IV',
     age: 42,
     married: false
   })

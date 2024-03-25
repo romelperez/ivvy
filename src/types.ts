@@ -79,7 +79,7 @@ export type IvvyManagerState<Data extends Record<string, unknown>> = {
   domListeners: Writable<Array<[HTMLElement, string, (event: Event) => void]>>
   fieldsElements: Writable<Partial<Record<keyof Data, IvvyManagerFieldElement[]>>>
   /**
-   * The form data directly from the form DOM elements or by the user.
+   * The form data directly from the form DOM elements or as provided by the user.
    * This data is before the "formatters" and Yrel validation transformations.
    */
   sourceData: Writable<IvvyManagerFieldsData<Data>>
@@ -88,36 +88,72 @@ export type IvvyManagerState<Data extends Record<string, unknown>> = {
    */
   isValid: Writable<boolean>
   /**
-   * If any of the form elements have been touched by the user.
-   * If the form has been submitted at least once, it is also marked as touched.
-   */
-  isTouched: Writable<boolean>
-  /**
-   * The form data after "formatters" and Yrel validation transformations.
+   * The form data after "formatters" and Yrel validation transformations if provided.
    */
   data: Writable<IvvyManagerFieldsData<Data>>
-  /**
-   * The form fields if they have been touched or not.
-   */
-  touches: Writable<IvvyManagerFieldsTouches<Data>>
   /**
    * The form fields if they have errors or not.
    * If a field has an error, it will be a list of message texts.
    * Otherwise, it is undefined.
    */
   errors: Writable<IvvyManagerFieldsErrors<Data>>
+  /**
+   * If any of the form elements have been touched by the user.
+   * If the form has been submitted at least once, it is also marked as touched.
+   */
+  isTouched: Writable<boolean>
+  /**
+   * The form fields if they have been touched or not.
+   */
+  touches: Writable<IvvyManagerFieldsTouches<Data>>
 }
 
 export interface IvvyManager<Data extends Record<string, unknown>> {
+  /**
+   * If the form "data" is valid.
+   */
   isValid: Writable<boolean>
-  isTouched: Writable<boolean>
+  /**
+   * The form data after "formatters" and Yrel validation transformations if provided.
+   */
   data: Writable<IvvyManagerFieldsData<Data>>
-  touches: Writable<IvvyManagerFieldsTouches<Data>>
+  /**
+   * The form fields if they have errors or not.
+   * If a field has an error, it will be a list of message texts.
+   * Otherwise, it is undefined.
+   */
   errors: Writable<IvvyManagerFieldsErrors<Data>>
-  validate: () => void
+  /**
+   * If any of the form elements have been touched by the user.
+   * If the form has been submitted at least once, it is also marked as touched.
+   */
+  isTouched: Writable<boolean>
+  /**
+   * The form fields if they have been touched or not.
+   */
+  touches: Writable<IvvyManagerFieldsTouches<Data>>
+  /**
+   * Reset the state of the form manager as it was initially defined.
+   */
   reset: () => void
+  /**
+   * Reset the form manager state and remove all DOM event listeners.
+   */
   destroy: () => void
+  /**
+   * Partially update the form data.
+   */
   setData: (data: Partial<Data>) => void
+  /**
+   * Add the HTMLFormElement to the manager. It will get a submit DOM event listener.
+   * @param element HTMLFormElement
+   */
   useFormElement: (element: HTMLFormElement) => void
+  /**
+   * Add a form element to the manager. It will read its `name` attribute and
+   * use it as its field name. According to the type of HTMLElement, it will get
+   * DOM event listeners to listen to user input for data updates.
+   * @param element The field form element. e.g. HTMLInputElement.
+   */
   useFieldElement: (element: IvvyManagerFieldElement) => void
 }

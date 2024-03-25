@@ -41,10 +41,10 @@ const createIvvyManager = <Data extends Record<string, unknown>>(
     fieldsElements: writable<Partial<Record<keyof Data, IvvyManagerFieldElement[]>>>({}),
     sourceData: writable<IvvyManagerFieldsData<Data>>(Object.freeze(props.initialData) as Data),
     isValid: writable(false),
-    isTouched: writable(false),
     data: writable<IvvyManagerFieldsData<Data>>(Object.freeze(props.initialData) as Data),
-    touches: writable<IvvyManagerFieldsTouches<Data>>(Object.freeze({})),
-    errors: writable<IvvyManagerFieldsErrors<Data>>(Object.freeze({}))
+    errors: writable<IvvyManagerFieldsErrors<Data>>(Object.freeze({})),
+    isTouched: writable(false),
+    touches: writable<IvvyManagerFieldsTouches<Data>>(Object.freeze({}))
   })
 
   const validate = createFormValidator<Data>(props, state)
@@ -112,11 +112,10 @@ const createIvvyManager = <Data extends Record<string, unknown>>(
 
   const formManager = {
     isValid: state.isValid,
-    isTouched: state.isTouched,
     data: state.data,
-    touches: state.touches,
     errors: state.errors,
-    validate,
+    touches: state.touches,
+    isTouched: state.isTouched,
     reset,
     destroy,
     setData,
