@@ -50,20 +50,9 @@ const createIvvyManager = <Data extends Record<string, unknown>>(
   const useFormElement = createUseFormElement<Data>(props, state)
   const useFieldElement = createUseFieldElement<Data>(props, state)
 
+  let isOnUpdateFirstCall = true
+
   const reset = (): void => {
-    const fieldsElementsValue = get(state.fieldsElements)
-    const fieldsKeys = Object.keys(fieldsElementsValue) as Array<keyof Data>
-
-    for (const fieldKey of fieldsKeys) {
-      const elements = fieldsElementsValue[fieldKey]
-      const value = props.initialData[fieldKey]
-
-      if (Array.isArray(elements)) {
-        setFieldElementValue(fieldKey, elements, value)
-      }
-    }
-
-    // Reset state.
     state.sourceData.set(Object.freeze(props.initialData) as Data)
     state.isTouched.set(false)
     state.touches.set(Object.freeze({}))
@@ -109,7 +98,23 @@ const createIvvyManager = <Data extends Record<string, unknown>>(
   })
 
   state.data.subscribe(() => {
-    props.onUpdate?.(get(state.data))
+    const fieldsElementsValue = get(state.fieldsElements)
+    const fieldsKeys = Object.keys(fieldsElementsValue) as Array<keyof Data>
+
+    for (const fieldKey of fieldsKeys) {
+      const elements = fieldsElementsValue[fieldKey]
+      const value = props.initialData[fieldKey]
+
+      if (Array.isArray(elements)) {
+        setFieldElementValue(fieldKey, elements, value)
+      }
+    }
+
+    if (isOnUpdateFirstCall) {
+      isOnUpdateFirstCall = false
+    } else {
+      props.onUpdate?.(get(state.data))
+    }
   })
 
   const formManager = {

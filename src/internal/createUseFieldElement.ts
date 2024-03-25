@@ -60,7 +60,7 @@ const createUseFieldElement = <Data extends Record<string, unknown>>(
             dataFieldValueCurrent !== undefined &&
             !Array.isArray(dataFieldValueCurrent)
           ) {
-            throw new Error(
+            console.error(
               'Ivvy, if an input type checkbox has the attribute value with text, the corresponding form manager data type must be an array of strings or nullish.'
             )
           }
@@ -118,14 +118,14 @@ const createUseFieldElement = <Data extends Record<string, unknown>>(
       )
     }
 
-    if (isInputCheckbox || isInputRadio) {
-      element.addEventListener('click', onUpdate)
-      element.addEventListener('click', onTouch)
+    if (isInputCheckbox || isInputRadio || isSelect) {
+      element.addEventListener('change', onUpdate)
+      element.addEventListener('change', onTouch)
 
       state.domListeners.update((values) => [
         ...values,
-        [element, 'click', onUpdate],
-        [element, 'click', onTouch]
+        [element, 'change', onUpdate],
+        [element, 'change', onTouch]
       ])
     } else if (isInputFile) {
       element.addEventListener('input', onUpdate)
@@ -135,15 +135,6 @@ const createUseFieldElement = <Data extends Record<string, unknown>>(
         ...values,
         [element, 'input', onUpdate],
         [element, 'input', onTouch]
-      ])
-    } else if (isSelect) {
-      element.addEventListener('change', onUpdate)
-      element.addEventListener('change', onTouch)
-
-      state.domListeners.update((values) => [
-        ...values,
-        [element, 'change', onUpdate],
-        [element, 'change', onTouch]
       ])
     } else if (isFormElement) {
       element.addEventListener('input', onUpdate)

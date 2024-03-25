@@ -4,7 +4,7 @@ import { get } from 'svelte/store'
 import { type InferYrel, y } from 'yrel'
 import { createIvvyManager } from '../'
 
-test('Should set form elements the initialData on useFormElement setup', () => {
+test('Should set form elements initialData and setData data updates', () => {
   const schema = y.object({
     name: y.string(),
     birthdate: y.string().date(),
@@ -54,51 +54,6 @@ test('Should set form elements the initialData on useFormElement setup', () => {
   expect(fieldElementPasscode.value).toBe('123')
   expect(fieldElementWebsite.value).toBe('https://x.com')
   expect(fieldElementBio.value).toBe('my bio')
-})
-
-test('Should set form elements setData data updates', () => {
-  const schema = y.object({
-    name: y.string(),
-    birthdate: y.string().date(),
-    age: y.number(),
-    passcode: y.string(),
-    website: y.string(),
-    bio: y.string()
-  })
-  type Data = InferYrel<typeof schema>
-  const manager = createIvvyManager<Data>({
-    initialData: {
-      name: 'ivvy',
-      birthdate: '2024-01-01',
-      age: 21,
-      passcode: '123',
-      website: 'https://x.com',
-      bio: 'my bio'
-    }
-  })
-
-  const formElement = document.createElement('form')
-  formElement.innerHTML = `
-    <input name="name" type="text" />
-    <input name="birthdate" type="date" />
-    <input name="age" type="number" />
-    <input name="passcode" type="password" />
-    <input name="website" type="url" />
-    <textarea name="bio" />
-  `
-  const fieldElementName = formElement.querySelector<HTMLInputElement>('[name=name]')!
-  const fieldElementBirthdate = formElement.querySelector<HTMLInputElement>('[name=birthdate]')!
-  const fieldElementAge = formElement.querySelector<HTMLInputElement>('[name=age]')!
-  const fieldElementPasscode = formElement.querySelector<HTMLInputElement>('[name=passcode]')!
-  const fieldElementWebsite = formElement.querySelector<HTMLInputElement>('[name=website]')!
-  const fieldElementBio = formElement.querySelector<HTMLInputElement>('[name=bio]')!
-
-  manager.useFieldElement(fieldElementName)
-  manager.useFieldElement(fieldElementBirthdate)
-  manager.useFieldElement(fieldElementAge)
-  manager.useFieldElement(fieldElementPasscode)
-  manager.useFieldElement(fieldElementWebsite)
-  manager.useFieldElement(fieldElementBio)
 
   manager.setData({
     name: 'IV',
@@ -108,6 +63,7 @@ test('Should set form elements setData data updates', () => {
     website: 'https://y.com',
     bio: 'new bio'
   })
+
   expect(fieldElementName.value).toBe('IV')
   expect(fieldElementBirthdate.value).toBe('2000-01-01')
   expect(fieldElementAge.value).toBe('10')
