@@ -2,17 +2,16 @@ import { get } from 'svelte/store'
 import type {
   IvvyManagerPropsInternal,
   IvvyManagerState,
+  IvvyUseHookOutput,
   IvvyManagerFieldElement
 } from '../types.js'
 import { setFieldElementValue } from './setFieldElementValue.js'
 
-type UseFieldElement = (element: IvvyManagerFieldElement) => void
-
 const createUseFieldElement = <Data extends Record<string, unknown>>(
   props: IvvyManagerPropsInternal<Data>,
   state: IvvyManagerState<Data>
-): UseFieldElement => {
-  return (element: IvvyManagerFieldElement): void => {
+): ((element: IvvyManagerFieldElement) => IvvyUseHookOutput) => {
+  return (element) => {
     const name = element.getAttribute('name') as keyof Data
 
     if (!Object.keys(props.initialData).includes(name as string)) {
@@ -25,10 +24,7 @@ const createUseFieldElement = <Data extends Record<string, unknown>>(
     const fieldElementsCurrent = fieldsElements[name]
     const fieldElementsNew = fieldElementsCurrent ? [...fieldElementsCurrent, element] : [element]
 
-    state.fieldsElements.update((value) => ({
-      ...value,
-      [name]: fieldElementsNew
-    }))
+    state.fieldsElements.update((value) => ({ ...value, [name]: fieldElementsNew }))
 
     setFieldElementValue(name, fieldElementsNew, get(state.data)[name])
 
@@ -103,6 +99,25 @@ const createUseFieldElement = <Data extends Record<string, unknown>>(
       state.touches.update((touches) => Object.freeze({ ...touches, [name]: true }))
     }
 
+    const destroy = (): void => {
+      state.fieldsElements.update((fieldsElements) => {
+        const fieldElement = fieldsElements[name]
+        fieldsElements[name] = fieldElement
+          ? fieldElement.filter((item) => item !== element)
+          : undefined
+        return { ...fieldsElements }
+      })
+
+      state.domListeners.update((domListeners) =>
+        domListeners.filter(([itemElement, eventName, listener]) => {
+          if (itemElement === element) {
+            element.removeEventListener(eventName, listener)
+          }
+          return itemElement !== element
+        })
+      )
+    }
+
     if (isInputCheckbox || isInputRadio) {
       element.addEventListener('click', onUpdate)
       element.addEventListener('click', onTouch)
@@ -142,7 +157,9 @@ const createUseFieldElement = <Data extends Record<string, unknown>>(
         [element, 'change', onTouch]
       ])
     }
+
+    return { destroy }
   }
 }
 
-export { type UseFieldElement, createUseFieldElement }
+export { createUseFieldElement }

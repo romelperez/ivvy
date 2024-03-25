@@ -78,6 +78,7 @@ export type IvvyManagerPropsInternal<
 export type IvvyManagerState<Data extends Record<string, unknown>> = {
   domListeners: Writable<Array<[HTMLElement, string, (event: Event) => void]>>
   fieldsElements: Writable<Partial<Record<keyof Data, IvvyManagerFieldElement[]>>>
+  formElement: Writable<HTMLFormElement | null>
   /**
    * The form data directly from the form DOM elements or as provided by the user.
    * This data is after "formatters" and before Yrel validation transformations.
@@ -106,6 +107,10 @@ export type IvvyManagerState<Data extends Record<string, unknown>> = {
    * The form fields if they have been touched or not.
    */
   touches: Writable<IvvyManagerFieldsTouches<Data>>
+}
+
+export interface IvvyUseHookOutput {
+  destroy: () => void
 }
 
 export interface IvvyManager<Data extends Record<string, unknown>> {
@@ -148,12 +153,12 @@ export interface IvvyManager<Data extends Record<string, unknown>> {
    * Add the HTMLFormElement to the manager. It will get a submit DOM event listener.
    * @param element HTMLFormElement
    */
-  useFormElement: (element: HTMLFormElement) => void
+  useFormElement: (element: HTMLFormElement) => IvvyUseHookOutput
   /**
    * Add a form element to the manager. It will read its `name` attribute and
    * use it as its field name. According to the type of HTMLElement, it will get
    * DOM event listeners to listen to user input for data updates.
    * @param element The field form element. e.g. HTMLInputElement.
    */
-  useFieldElement: (element: IvvyManagerFieldElement) => void
+  useFieldElement: (element: IvvyManagerFieldElement) => IvvyUseHookOutput
 }

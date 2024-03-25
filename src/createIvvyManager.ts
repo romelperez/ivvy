@@ -1,9 +1,5 @@
 // TODO: Add support for select multiple element.
 
-// TODO: Clean up specific form and fields elements if they are unmounted.
-// The Svelte `use:action` return `destroy` function can be used and the initial
-// value should be set.
-
 // TODO: Add side-effects functionality to allow to update data values when
 // specific values change under certain conditions.
 
@@ -41,6 +37,7 @@ const createIvvyManager = <Data extends Record<string, unknown>>(
   const state: IvvyManagerState<Data> = Object.freeze({
     domListeners: writable<Array<[HTMLElement, string, (event: Event) => void]>>([]),
     fieldsElements: writable<Partial<Record<keyof Data, IvvyManagerFieldElement[]>>>({}),
+    formElement: writable<HTMLFormElement | null>(null),
     sourceData: writable<IvvyManagerFieldsData<Data>>(Object.freeze(props.initialData) as Data),
     isValid: writable(false),
     data: writable<IvvyManagerFieldsData<Data>>(Object.freeze(props.initialData) as Data),

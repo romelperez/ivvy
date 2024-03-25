@@ -1,15 +1,21 @@
 import { get } from 'svelte/store'
-import type { IvvyManagerPropsInternal, IvvyManagerState } from '../types.js'
-
-type UseFormElement = (formElement: HTMLFormElement) => void
+import type { IvvyManagerPropsInternal, IvvyUseHookOutput, IvvyManagerState } from '../types.js'
 
 const createUseFormElement = <Data extends Record<string, unknown>>(
   props: IvvyManagerPropsInternal<Data>,
   state: IvvyManagerState<Data>
-): UseFormElement => {
+): ((formElement: HTMLFormElement) => IvvyUseHookOutput) => {
   const { initialData, preventSubmit, onSubmit } = props
 
   return (formElement) => {
+    if (!(formElement instanceof HTMLFormElement)) {
+      throw new Error('Ivvy manager "useFormElement" was not provided a valid <form/> element.')
+    }
+
+    if (get(state.formElement)) {
+      throw new Error('Ivvy manager already has an existing form configured.')
+    }
+
     const onFormSubmit = (event: Event): void => {
       if (preventSubmit === 'always') {
         event.preventDefault()
@@ -43,15 +49,35 @@ const createUseFormElement = <Data extends Record<string, unknown>>(
             block: 'center',
             behavior: 'instant'
           })
-          firstErrorElement.focus?.()
+          firstErrorElement.focus()
         }
       }
     }
 
+    const destroy = (): void => {
+      state.formElement.set(null)
+
+      state.domListeners.update((domListeners) =>
+        domListeners.filter(([element, eventName, listener]) => {
+          if (element === formElement) {
+            formElement.removeEventListener(eventName, listener)
+          }
+          return element !== formElement
+        })
+      )
+    }
+
+    state.formElement.set(formElement)
+
     formElement.addEventListener('submit', onFormSubmit)
 
-    state.domListeners.update((values) => [...values, [formElement, 'submit', onFormSubmit]])
+    state.domListeners.update((domListeners) => [
+      ...domListeners,
+      [formElement, 'submit', onFormSubmit]
+    ])
+
+    return { destroy }
   }
 }
 
-export { type UseFormElement, createUseFormElement }
+export { createUseFormElement }
