@@ -3,9 +3,9 @@ import { type YrelErrorTranslations, type YrelSchema, isYrel, validateYrel } fro
 import { type UktiLanguages, type UktiTranslations, createUktiTranslator } from 'ukti'
 
 import type {
+  IvvyLanguageDefault,
   IvvyManagerPropsValidators,
   IvvyManagerFieldsErrors,
-  IvvyManagerPropsInternal,
   IvvyManagerState
 } from '../types.js'
 
@@ -16,38 +16,35 @@ type ObjectWriteable<T> = {
 const createFormValidator = <
   Data extends Record<string, unknown>,
   Languages extends string = UktiLanguages,
-  LanguageDefault extends string = 'en'
+  LanguageDefault extends string = IvvyLanguageDefault
 >(
-  props: IvvyManagerPropsInternal<Data, Languages, LanguageDefault>,
-  state: IvvyManagerState<Data>
+  state: IvvyManagerState<Data, Languages, LanguageDefault>
 ): (() => void) => {
-  const createMapErrorMessage = (): ((msg: string, vars?: unknown) => string) => {
-    const { language, translations } = props
+  return (): void => {
+    const { validators, language, translations } = get(state.props)
+    const dataNew: ObjectWriteable<Data> = { ...get(state.sourceData) }
 
-    if (translations) {
-      // Since this is an internal functionality, the type checking is ignored.
-      // This is verified in the unit test cases.
-      const translator = createUktiTranslator<YrelErrorTranslations>({
-        languageDefault: language as 'en',
-        translations: translations as UktiTranslations<YrelErrorTranslations>
-      })
+    const createMapErrorMessage = (): ((msg: string, vars?: unknown) => string) => {
+      if (translations) {
+        // Since this is an internal functionality, the type checking is ignored.
+        // This is verified in the unit test cases.
+        const translator = createUktiTranslator<YrelErrorTranslations>({
+          languageDefault: language as IvvyLanguageDefault,
+          translations: translations as UktiTranslations<YrelErrorTranslations>
+        })
 
-      const translate = translator(language as UktiLanguages)
+        const translate = translator(language as UktiLanguages)
 
-      return (msg, vars) => {
-        const translation = (translate[msg as keyof YrelErrorTranslations] as any)(vars as any)
-        return translation || msg
+        return (msg, vars) => {
+          const translation = (translate[msg as keyof YrelErrorTranslations] as any)(vars as any)
+          return translation || msg
+        }
       }
+
+      return (msg) => msg
     }
 
-    return (msg) => msg
-  }
-
-  const mapErrorMessage = createMapErrorMessage()
-
-  return (): void => {
-    const { validators } = props
-    const dataNew: ObjectWriteable<Data> = { ...get(state.sourceData) }
+    const mapErrorMessage = createMapErrorMessage()
 
     if (isYrel(validators)) {
       const schema = validators as YrelSchema<Data>

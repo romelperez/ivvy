@@ -1,7 +1,7 @@
 import { get } from 'svelte/store'
 import type { UktiLanguages } from 'ukti'
 import type {
-  IvvyManagerPropsInternal,
+  IvvyLanguageDefault,
   IvvyManagerState,
   IvvyUseHookOutput,
   IvvyFieldElement
@@ -12,15 +12,15 @@ import { setFieldElementValue } from './setFieldElementValue.js'
 const createUseFieldElement = <
   Data extends Record<string, unknown>,
   Languages extends string = UktiLanguages,
-  LanguageDefault extends string = 'en'
+  LanguageDefault extends string = IvvyLanguageDefault
 >(
-  props: IvvyManagerPropsInternal<Data, Languages, LanguageDefault>,
-  state: IvvyManagerState<Data>
+  state: IvvyManagerState<Data, Languages, LanguageDefault>
 ): ((element: IvvyFieldElement) => IvvyUseHookOutput) => {
   return (element) => {
+    const { initialData } = get(state.props)
     const name = element.getAttribute('name') as keyof Data
 
-    if (!Object.keys(props.initialData).includes(name as string)) {
+    if (!Object.keys(initialData).includes(name as string)) {
       throw new Error(
         `Ivvy was provided a form element with name "${String(name)}" which is not defined in the initial form manager configuration.`
       )
@@ -46,16 +46,17 @@ const createUseFieldElement = <
       element instanceof HTMLSelectElement
 
     const onUpdate = (): void => {
+      const { cleanInputFileValue, formatters } = get(state.props)
       const data = get(state.data)
       const valueRaw = getFieldElementValue(element, data[name])
 
       // After input file has selected some files, reset the value
       // so it can select even the same files again.
-      if (props.cleanInputFileValue && isInputFile) {
+      if (cleanInputFileValue && isInputFile) {
         element.value = ''
       }
 
-      const fieldFormatter = props.formatters?.[name]
+      const fieldFormatter = formatters?.[name]
       const value = fieldFormatter ? fieldFormatter(valueRaw, data) : valueRaw
 
       state.sourceData.update((data) => Object.freeze({ ...data, [name]: value }))

@@ -17,6 +17,8 @@ export interface IvvyUseHookOutput {
   destroy: () => void
 }
 
+export type IvvyLanguageDefault = 'en'
+
 export type IvvyManagerFieldsData<Data extends Record<string, unknown>> = Readonly<Data>
 
 export type IvvyManagerInitialData<Data extends Record<string, unknown>> = {
@@ -51,7 +53,7 @@ export type IvvyManagerPropsValidators<Data extends Record<string, unknown>> =
 
 export type IvvyManagerPropsTranslations<
   Languages extends string = UktiLanguages,
-  LanguageDefault extends string = 'en'
+  LanguageDefault extends string = IvvyLanguageDefault
 > = Partial<
   Record<Languages, Partial<Record<keyof YrelErrorTranslations | (string & {}), string>>>
 > & {
@@ -61,7 +63,7 @@ export type IvvyManagerPropsTranslations<
 export type IvvyManagerProps<
   Data extends Record<string, unknown>,
   Languages extends string = UktiLanguages,
-  LanguageDefault extends string = 'en'
+  LanguageDefault extends string = IvvyLanguageDefault
 > = {
   initialData: IvvyManagerInitialData<Data>
   validators?: IvvyManagerPropsValidators<Data>
@@ -71,21 +73,44 @@ export type IvvyManagerProps<
   translations?: IvvyManagerPropsTranslations<Languages, LanguageDefault>
   onUpdate?: (data: Data) => void
   onSubmit?: (data: Data, event: Event) => void
-} & (LanguageDefault extends 'en' ? { language?: Languages } : { language: Languages })
+} & (LanguageDefault extends IvvyLanguageDefault
+  ? { language?: Languages }
+  : { language: Languages })
 
 export type IvvyManagerPropsInternal<
   Data extends Record<string, unknown>,
   Languages extends string = UktiLanguages,
-  LanguageDefault extends string = 'en'
+  LanguageDefault extends string = IvvyLanguageDefault
 > = IvvyManagerProps<Data, Languages, LanguageDefault> &
   Required<
     Pick<
       IvvyManagerProps<Data, Languages, LanguageDefault>,
-      'preventSubmit' | 'cleanInputFileValue' | 'language' | 'validators'
+      'validators' | 'preventSubmit' | 'cleanInputFileValue' | 'language'
     >
   >
 
-export type IvvyManagerState<Data extends Record<string, unknown>> = {
+export type IvvyManagerPropsUpdateable<
+  Data extends Record<string, unknown>,
+  Languages extends string = UktiLanguages,
+  LanguageDefault extends string = IvvyLanguageDefault
+> = Partial<
+  Pick<
+    IvvyManagerProps<Data, Languages, LanguageDefault>,
+    | 'validators'
+    | 'formatters'
+    | 'preventSubmit'
+    | 'cleanInputFileValue'
+    | 'language'
+    | 'translations'
+  >
+>
+
+export type IvvyManagerState<
+  Data extends Record<string, unknown>,
+  Languages extends string = UktiLanguages,
+  LanguageDefault extends string = IvvyLanguageDefault
+> = {
+  props: Writable<IvvyManagerPropsInternal<Data, Languages, LanguageDefault>>
   domListeners: Writable<Array<[HTMLElement, string, (event: Event) => void]>>
   fieldsElements: Writable<Partial<Record<keyof Data, IvvyFieldElement[]>>>
   formElement: Writable<HTMLFormElement | null>
@@ -119,7 +144,11 @@ export type IvvyManagerState<Data extends Record<string, unknown>> = {
   touches: Writable<IvvyManagerFieldsTouches<Data>>
 }
 
-export interface IvvyManager<Data extends Record<string, unknown>> {
+export interface IvvyManager<
+  Data extends Record<string, unknown>,
+  Languages extends string = UktiLanguages,
+  LanguageDefault extends string = IvvyLanguageDefault
+> {
   /**
    * If the form "data" is valid.
    */
@@ -143,6 +172,10 @@ export interface IvvyManager<Data extends Record<string, unknown>> {
    * The form fields if they have been touched or not.
    */
   touches: Writable<IvvyManagerFieldsTouches<Data>>
+  /**
+   * Update the props partially.
+   */
+  update: (newProps: IvvyManagerPropsUpdateable<Data, Languages, LanguageDefault>) => void
   /**
    * Reset the state of the form manager as it was initially defined.
    */

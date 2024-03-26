@@ -2,12 +2,14 @@ import { writable, get } from 'svelte/store'
 import type { UktiLanguages } from 'ukti'
 import type {
   IvvyFieldElement,
+  IvvyLanguageDefault,
   IvvyManagerFieldsData,
   IvvyManagerFieldsTouches,
   IvvyManagerFieldsErrors,
   IvvyManagerState,
   IvvyManagerProps,
   IvvyManagerPropsInternal,
+  IvvyManagerPropsUpdateable,
   IvvyManager
 } from './types.js'
 import {
@@ -20,11 +22,11 @@ import {
 const createIvvyManager = <
   Data extends Record<string, unknown>,
   Languages extends string = UktiLanguages,
-  LanguageDefault extends string = 'en'
+  LanguageDefault extends string = IvvyLanguageDefault
 >(
   providedProps: IvvyManagerProps<Data, Languages, LanguageDefault>
-): IvvyManager<Data> => {
-  const props = {
+): IvvyManager<Data, Languages, LanguageDefault> => {
+  const initialProps = {
     preventSubmit: 'onError',
     cleanInputFileValue: true,
     language: 'en',
@@ -32,26 +34,51 @@ const createIvvyManager = <
     ...(providedProps as unknown as object)
   } as unknown as IvvyManagerPropsInternal<Data, Languages, LanguageDefault>
 
-  const state: IvvyManagerState<Data> = Object.freeze({
+  const state: IvvyManagerState<Data, Languages, LanguageDefault> = Object.freeze({
+    props: writable(initialProps),
     domListeners: writable<Array<[HTMLElement, string, (event: Event) => void]>>([]),
     fieldsElements: writable<Partial<Record<keyof Data, IvvyFieldElement[]>>>({}),
     formElement: writable<HTMLFormElement | null>(null),
-    sourceData: writable<IvvyManagerFieldsData<Data>>(Object.freeze(props.initialData) as Data),
+    sourceData: writable<IvvyManagerFieldsData<Data>>(
+      Object.freeze(initialProps.initialData) as Data
+    ),
     isValid: writable(false),
-    data: writable<IvvyManagerFieldsData<Data>>(Object.freeze(props.initialData) as Data),
+    data: writable<IvvyManagerFieldsData<Data>>(Object.freeze(initialProps.initialData) as Data),
     errors: writable<IvvyManagerFieldsErrors<Data>>(Object.freeze({})),
     isTouched: writable(false),
     touches: writable<IvvyManagerFieldsTouches<Data>>(Object.freeze({}))
   })
 
-  const validate = createFormValidator<Data, Languages, LanguageDefault>(props, state)
-  const useFormElement = createUseFormElement<Data, Languages, LanguageDefault>(props, state)
-  const useFieldElement = createUseFieldElement<Data, Languages, LanguageDefault>(props, state)
+  const validate = createFormValidator<Data, Languages, LanguageDefault>(state)
+  const useFormElement = createUseFormElement<Data, Languages, LanguageDefault>(state)
+  const useFieldElement = createUseFieldElement<Data, Languages, LanguageDefault>(state)
 
   let isOnUpdateFirstCall = true
 
+  const update = (propsNew: IvvyManagerPropsUpdateable<Data, Languages, LanguageDefault>): void => {
+    const propsUpdateable = [
+      'validators',
+      'formatters',
+      'preventSubmit',
+      'cleanInputFileValue',
+      'language',
+      'translations'
+    ] as const
+    const propsToUpdate: IvvyManagerPropsUpdateable<Data, Languages, LanguageDefault> = {}
+
+    for (const propUpdateable of propsUpdateable) {
+      if (propsNew[propUpdateable] !== undefined) {
+        propsToUpdate[propUpdateable] = propsNew[propUpdateable] as any
+      }
+    }
+
+    state.props.update((props) => ({ ...props, ...propsToUpdate }))
+  }
+
   const reset = (): void => {
-    state.sourceData.set(Object.freeze(props.initialData) as Data)
+    const { initialData } = get(state.props)
+
+    state.sourceData.set(Object.freeze(initialData) as Data)
     state.isTouched.set(false)
     state.touches.set(Object.freeze({}))
   }
@@ -60,11 +87,16 @@ const createIvvyManager = <
     state.sourceData.set(Object.freeze({ ...get(state.data), ...newData }))
   }
 
+  const unsubscribePropsObserver = state.props.subscribe(() => {
+    validate()
+  })
+
   const unsubscribeValidation = state.sourceData.subscribe(() => {
     validate()
   })
 
   const unsubscribeUpdates = state.data.subscribe(() => {
+    const { onUpdate } = get(state.props)
     const dataNew = get(state.data)
     const fieldsElementsValue = get(state.fieldsElements)
     const fieldsKeys = Object.keys(fieldsElementsValue) as Array<keyof Data>
@@ -81,11 +113,14 @@ const createIvvyManager = <
     if (isOnUpdateFirstCall) {
       isOnUpdateFirstCall = false
     } else {
-      props.onUpdate?.(get(state.data))
+      onUpdate?.(get(state.data))
     }
   })
 
   const destroy = (): void => {
+    const { initialData } = get(state.props)
+
+    unsubscribePropsObserver()
     unsubscribeValidation()
     unsubscribeUpdates()
 
@@ -96,23 +131,24 @@ const createIvvyManager = <
 
     state.fieldsElements.set({})
 
-    state.sourceData.set(Object.freeze(props.initialData) as Data)
+    state.sourceData.set(Object.freeze(initialData) as Data)
     state.isTouched.set(false)
     state.touches.set(Object.freeze({}))
   }
 
-  const formManager = {
+  const formManager = Object.freeze({
     isValid: state.isValid,
     data: state.data,
     errors: state.errors,
     touches: state.touches,
     isTouched: state.isTouched,
+    update,
     reset,
     destroy,
     setData,
     useFormElement,
     useFieldElement
-  }
+  })
 
   return formManager
 }

@@ -1,17 +1,14 @@
 import { get } from 'svelte/store'
 import type { UktiLanguages } from 'ukti'
-import type { IvvyManagerPropsInternal, IvvyUseHookOutput, IvvyManagerState } from '../types.js'
+import type { IvvyLanguageDefault, IvvyUseHookOutput, IvvyManagerState } from '../types.js'
 
 const createUseFormElement = <
   Data extends Record<string, unknown>,
   Languages extends string = UktiLanguages,
-  LanguageDefault extends string = 'en'
+  LanguageDefault extends string = IvvyLanguageDefault
 >(
-  props: IvvyManagerPropsInternal<Data, Languages, LanguageDefault>,
-  state: IvvyManagerState<Data>
+  state: IvvyManagerState<Data, Languages, LanguageDefault>
 ): ((formElement: HTMLFormElement) => IvvyUseHookOutput) => {
-  const { initialData, preventSubmit, onSubmit } = props
-
   return (formElement) => {
     if (!(formElement instanceof HTMLFormElement)) {
       throw new Error('Ivvy manager "useFormElement" was not provided a valid <form/> element.')
@@ -22,6 +19,8 @@ const createUseFormElement = <
     }
 
     const onFormSubmit = (event: Event): void => {
+      const { initialData, preventSubmit, onSubmit } = get(state.props)
+
       if (preventSubmit === 'always') {
         event.preventDefault()
       }
