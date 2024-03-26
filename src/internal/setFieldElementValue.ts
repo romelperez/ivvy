@@ -7,6 +7,7 @@ const setFieldElementValue = (elements: IvvyFieldElement[], value: unknown): voi
     const isInputRadio = isInput && element.type === 'radio'
     const isInputFile = isInput && element.type === 'file'
     const isSelect = element instanceof HTMLSelectElement
+    const isSelectMultiple = isSelect && typeof element.getAttribute('multiple') === 'string'
     const isFormElement =
       element instanceof HTMLInputElement ||
       element instanceof HTMLTextAreaElement ||
@@ -28,23 +29,12 @@ const setFieldElementValue = (elements: IvvyFieldElement[], value: unknown): voi
       element.checked = element.value === value
     }
     //
-    else if (isSelect) {
-      // Multiple value select.
-      if (typeof element.getAttribute('multiple') === 'string') {
-        const options = element.querySelectorAll('option')
-        const isValudAnArray = Array.isArray(value)
+    else if (isSelectMultiple) {
+      const options = element.querySelectorAll('option')
+      const isValueAnArray = Array.isArray(value)
 
-        for (const option of options) {
-          option.selected = isValudAnArray ? value.includes(option.value) : false
-        }
-      }
-      // Single value select.
-      else {
-        if (typeof value === 'string' || Number.isFinite(value)) {
-          element.value = String(value)
-        } else if (value === undefined || value === null) {
-          element.value = ''
-        }
+      for (const option of options) {
+        option.selected = isValueAnArray ? value.includes(option.value) : false
       }
     }
     //

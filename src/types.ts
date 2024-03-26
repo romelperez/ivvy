@@ -13,6 +13,10 @@ export type IvvyFieldValue =
   | File
   | Array<boolean | number | string | File>
 
+export interface IvvyUseHookOutput {
+  destroy: () => void
+}
+
 export type IvvyManagerFieldsData<Data extends Record<string, unknown>> = Readonly<Data>
 
 export type IvvyManagerInitialData<Data extends Record<string, unknown>> = {
@@ -54,21 +58,20 @@ export type IvvyManagerPropsTranslations<
   [L in LanguageDefault]: Partial<Record<keyof YrelErrorTranslations | (string & {}), string>>
 }
 
-export interface IvvyManagerProps<
+export type IvvyManagerProps<
   Data extends Record<string, unknown>,
   Languages extends string = UktiLanguages,
   LanguageDefault extends string = 'en'
-> {
+> = {
   initialData: IvvyManagerInitialData<Data>
   validators?: IvvyManagerPropsValidators<Data>
   formatters?: IvvyManagerPropsFormatters<Data>
   preventSubmit?: 'always' | 'onError' | false
   cleanInputFileValue?: boolean
-  language?: Languages
   translations?: IvvyManagerPropsTranslations<Languages, LanguageDefault>
   onUpdate?: (data: Data) => void
   onSubmit?: (data: Data, event: Event) => void
-}
+} & (LanguageDefault extends 'en' ? { language?: Languages } : { language: Languages })
 
 export type IvvyManagerPropsInternal<
   Data extends Record<string, unknown>,
@@ -114,10 +117,6 @@ export type IvvyManagerState<Data extends Record<string, unknown>> = {
    * The form fields if they have been touched or not.
    */
   touches: Writable<IvvyManagerFieldsTouches<Data>>
-}
-
-export interface IvvyUseHookOutput {
-  destroy: () => void
 }
 
 export interface IvvyManager<Data extends Record<string, unknown>> {

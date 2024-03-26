@@ -19,10 +19,6 @@ const getFieldElementValue = (
     const inputCheckboxValue = element.getAttribute('value')
 
     // String array checkbox.
-    // If the input is checkbox and has a "value" attribute with data,
-    // then this field value is of type "string[]", where if the checkbox
-    // is checked, the correponding element value string will be in the array,
-    // otherwise, the element value string is removed from it.
     if (typeof inputCheckboxValue === 'string' && inputCheckboxValue.length) {
       value = Array.isArray(valueCurrent) ? [...valueCurrent] : []
 

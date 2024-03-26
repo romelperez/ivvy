@@ -1,4 +1,5 @@
 import { get } from 'svelte/store'
+import type { UktiLanguages } from 'ukti'
 import type {
   IvvyManagerPropsInternal,
   IvvyManagerState,
@@ -8,8 +9,12 @@ import type {
 import { getFieldElementValue } from './getFieldElementValue.js'
 import { setFieldElementValue } from './setFieldElementValue.js'
 
-const createUseFieldElement = <Data extends Record<string, unknown>>(
-  props: IvvyManagerPropsInternal<Data>,
+const createUseFieldElement = <
+  Data extends Record<string, unknown>,
+  Languages extends string = UktiLanguages,
+  LanguageDefault extends string = 'en'
+>(
+  props: IvvyManagerPropsInternal<Data, Languages, LanguageDefault>,
   state: IvvyManagerState<Data>
 ): ((element: IvvyFieldElement) => IvvyUseHookOutput) => {
   return (element) => {

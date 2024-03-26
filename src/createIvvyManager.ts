@@ -1,9 +1,5 @@
-// TODO: Add side-effects functionality to allow to update data values when
-// specific values change under certain conditions.
-
-// TODO: Add option for event types to mark an element as touched.
-
 import { writable, get } from 'svelte/store'
+import type { UktiLanguages } from 'ukti'
 import type {
   IvvyFieldElement,
   IvvyManagerFieldsData,
@@ -21,16 +17,20 @@ import {
   createUseFieldElement
 } from './internal/index.js'
 
-const createIvvyManager = <Data extends Record<string, unknown>>(
-  providedProps: IvvyManagerProps<Data>
+const createIvvyManager = <
+  Data extends Record<string, unknown>,
+  Languages extends string = UktiLanguages,
+  LanguageDefault extends string = 'en'
+>(
+  providedProps: IvvyManagerProps<Data, Languages, LanguageDefault>
 ): IvvyManager<Data> => {
-  const props: IvvyManagerPropsInternal<Data> = {
+  const props = {
     preventSubmit: 'onError',
     cleanInputFileValue: true,
     language: 'en',
     validators: {},
-    ...providedProps
-  }
+    ...(providedProps as unknown as object)
+  } as unknown as IvvyManagerPropsInternal<Data, Languages, LanguageDefault>
 
   const state: IvvyManagerState<Data> = Object.freeze({
     domListeners: writable<Array<[HTMLElement, string, (event: Event) => void]>>([]),
@@ -44,9 +44,9 @@ const createIvvyManager = <Data extends Record<string, unknown>>(
     touches: writable<IvvyManagerFieldsTouches<Data>>(Object.freeze({}))
   })
 
-  const validate = createFormValidator<Data>(props, state)
-  const useFormElement = createUseFormElement<Data>(props, state)
-  const useFieldElement = createUseFieldElement<Data>(props, state)
+  const validate = createFormValidator<Data, Languages, LanguageDefault>(props, state)
+  const useFormElement = createUseFormElement<Data, Languages, LanguageDefault>(props, state)
+  const useFieldElement = createUseFieldElement<Data, Languages, LanguageDefault>(props, state)
 
   let isOnUpdateFirstCall = true
 
@@ -89,16 +89,13 @@ const createIvvyManager = <Data extends Record<string, unknown>>(
     unsubscribeValidation()
     unsubscribeUpdates()
 
-    // Remove HTML element event listeners.
     get(state.domListeners).forEach(([element, eventName, listener]) => {
       element.removeEventListener(eventName, listener)
     })
     state.domListeners.set([])
 
-    // Remove fields elements references.
     state.fieldsElements.set({})
 
-    // Reset state.
     state.sourceData.set(Object.freeze(props.initialData) as Data)
     state.isTouched.set(false)
     state.touches.set(Object.freeze({}))

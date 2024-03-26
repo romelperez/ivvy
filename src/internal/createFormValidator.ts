@@ -1,6 +1,6 @@
 import { get } from 'svelte/store'
 import { type YrelErrorTranslations, type YrelSchema, isYrel, validateYrel } from 'yrel'
-import { type UktiLanguages, createUktiTranslator } from 'ukti'
+import { type UktiLanguages, type UktiTranslations, createUktiTranslator } from 'ukti'
 
 import type {
   IvvyManagerPropsValidators,
@@ -13,27 +13,26 @@ type ObjectWriteable<T> = {
   -readonly [P in keyof T]: T[P]
 }
 
-const createFormValidator = <Data extends Record<string, unknown>>(
-  props: IvvyManagerPropsInternal<Data>,
+const createFormValidator = <
+  Data extends Record<string, unknown>,
+  Languages extends string = UktiLanguages,
+  LanguageDefault extends string = 'en'
+>(
+  props: IvvyManagerPropsInternal<Data, Languages, LanguageDefault>,
   state: IvvyManagerState<Data>
 ): (() => void) => {
   const createMapErrorMessage = (): ((msg: string, vars?: unknown) => string) => {
     const { language, translations } = props
 
     if (translations) {
-      if (translations[language] === null || typeof translations[language] !== 'object') {
-        throw new Error('Ivvy requires translation content for the provided language to use.')
-      }
-
+      // Since this is an internal functionality, the type checking is ignored.
+      // This is verified in the unit test cases.
       const translator = createUktiTranslator<YrelErrorTranslations>({
         languageDefault: language as 'en',
-        translations: translations as Record<
-          UktiLanguages,
-          Record<keyof YrelErrorTranslations, string>
-        >
+        translations: translations as UktiTranslations<YrelErrorTranslations>
       })
 
-      const translate = translator(language)
+      const translate = translator(language as UktiLanguages)
 
       return (msg, vars) => {
         const translation = (translate[msg as keyof YrelErrorTranslations] as any)(vars as any)
@@ -81,7 +80,7 @@ const createFormValidator = <Data extends Record<string, unknown>>(
     }
 
     const validatorsObject = validators as Exclude<IvvyManagerPropsValidators<Data>, YrelSchema>
-    const validatorsKeys = Object.keys(validators) as Array<keyof Data>
+    const validatorsKeys = Object.keys(validatorsObject) as Array<keyof Data>
 
     interface FieldValidation {
       name: keyof Data

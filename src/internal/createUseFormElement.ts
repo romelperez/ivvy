@@ -1,8 +1,13 @@
 import { get } from 'svelte/store'
+import type { UktiLanguages } from 'ukti'
 import type { IvvyManagerPropsInternal, IvvyUseHookOutput, IvvyManagerState } from '../types.js'
 
-const createUseFormElement = <Data extends Record<string, unknown>>(
-  props: IvvyManagerPropsInternal<Data>,
+const createUseFormElement = <
+  Data extends Record<string, unknown>,
+  Languages extends string = UktiLanguages,
+  LanguageDefault extends string = 'en'
+>(
+  props: IvvyManagerPropsInternal<Data, Languages, LanguageDefault>,
   state: IvvyManagerState<Data>
 ): ((formElement: HTMLFormElement) => IvvyUseHookOutput) => {
   const { initialData, preventSubmit, onSubmit } = props

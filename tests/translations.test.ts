@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest'
 import { get } from 'svelte/store'
-import { y } from 'yrel'
-import { createIvvyManager } from '../'
+import { type InferYrel, y } from 'yrel'
+import { createIvvyManager, type IvvyManagerPropsTranslations } from '../'
 
 test('Should accept partial Yrel error translations and report data errors if invalid', () => {
   type Data = {
@@ -77,5 +77,43 @@ test('Should accept custom error messages in translations and report data errors
     name: ['my_error_name'],
     age: ['The age must be at least 10 in value.'],
     married: ['Requires to be married.']
+  })
+})
+
+test('Should accept custom language and translations', () => {
+  const schema = y.object({
+    name: y.string(),
+    age: y.number()
+  })
+  type Data = InferYrel<typeof schema>
+  type Languages = 'english' | 'spanish' | 'french'
+  type LanguagesDefault = 'spanish'
+  const translations: IvvyManagerPropsTranslations<Languages, LanguagesDefault> = {
+    english: {
+      err_number: 'Number required.',
+      err_string: 'String required.'
+    },
+    spanish: {
+      err_number: 'Número requerido.',
+      err_string: 'Texto requerido.'
+    },
+    french: {
+      err_number: 'Numéro requis.',
+      err_string: 'Texte requis.'
+    }
+  }
+  const manager = createIvvyManager<Data, Languages, LanguagesDefault>({
+    initialData: { name: 'ivvy', age: 21 },
+    validators: schema,
+    language: 'french',
+    translations
+  })
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  manager.setData({ name: 2, age: '10' } as any)
+  expect(get(manager.isValid)).toBe(false)
+  expect(get(manager.errors)).toEqual({
+    name: ['Texte requis.'],
+    age: ['Numéro requis.']
   })
 })

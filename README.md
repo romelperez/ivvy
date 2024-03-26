@@ -34,18 +34,17 @@ to define validators and error translations.
 ```svelte
 <script lang="ts">
   import { onDestroy } from 'svelte'
-  import { createIvvyManager } from 'ivvy'
-  import { type InferYrel, type YrelErrorTranslations, y } from 'yrel'
-  import type { UktiTranslations } from 'ukti'
+  import { type IvvyManagerPropsTranslations, createIvvyManager } from 'ivvy'
+  import { type InferYrel, y } from 'yrel'
 
   const schema = y.object({
     name: y.string().min(2).max(20),
     age: y.number().gte(18).lte(150).nullable()
   })
 
-  type FormData = InferYrel<typeof schema>
+  type Data = InferYrel<typeof schema>
 
-  const translations: UktiTranslations<YrelErrorTranslations> = {
+  const translations: IvvyManagerPropsTranslations = {
     en: {
       err_number: 'A valid number is required.',
       err_number_gte: 'This number should be at least {{gte}}.',
@@ -53,22 +52,20 @@ to define validators and error translations.
       err_string: 'A valid text is required.',
       err_string_min: 'This field should have at least {{min}} character{{min === 1 ? "" : "s"}}.',
       err_string_max: 'This field should have at most {{max}} character{{max === 1 ? "" : "s"}}.'
-      // ...
-    } as Record<keyof YrelErrorTranslations, string>
+    }
   }
 
-  const manager = createIvvyManager<FormData>({
-    preventSubmit: 'always',
+  const manager = createIvvyManager<Data>({
     initialData: {
       name: 'Ivvy',
       age: 21
     },
     formatters: {
-      age: (value) => (isNaN(Number(value)) ? null : Number(value))
+      age: (value) => !Number.isFinite(+value) ? null : +value
     },
-    validators: schema.shape,
-    locale: 'en',
+    validators: schema,
     translations,
+    preventSubmit: 'always',
     onSubmit: (data) => console.log(data)
   })
 
