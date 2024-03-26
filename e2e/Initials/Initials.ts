@@ -15,9 +15,8 @@ export const createFormManager = (): IvvyManager<FormData> =>
       favourite_pets: ['cats']
     },
     formatters: {
-      age: (value) => (isNaN(Number(value)) ? null : Number(value))
+      age: (value) => (Number.isFinite(value) && value !== '' ? Number(value) : null)
     },
-    validators: schema.shape,
-    language: 'en',
+    validators: schema,
     translations
   })

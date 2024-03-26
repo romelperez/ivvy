@@ -16,9 +16,8 @@ export const createFormManager = (): IvvyManager<FormData> =>
     },
     formatters: {
       fullName: (value) => (value ? String(value).toUpperCase() : ''),
-      age: (value) => (isNaN(Number(value)) ? null : Number(value))
+      age: (value) => (Number.isFinite(value) && value !== '' ? Number(value) : null)
     },
-    validators: schema.shape,
-    language: 'en',
+    validators: schema,
     translations
   })

@@ -28,7 +28,7 @@
   <div data-stat-data>data: {JSON.stringify($data)}</div>
 
   <label data-name="fullName">
-    <div data-is-label>Full Name:</div>
+    <div data-label>Full Name:</div>
     <input
       type="text"
       name="fullName"
@@ -41,7 +41,7 @@
   </label>
 
   <label data-name="email">
-    <div data-is-label>Email:</div>
+    <div data-label>Email:</div>
     <input
       type="email"
       name="email"
@@ -54,7 +54,7 @@
   </label>
 
   <label data-name="age">
-    <div data-is-label>Age:</div>
+    <div data-label>Age:</div>
     <input
       type="number"
       name="age"
@@ -67,7 +67,7 @@
   </label>
 
   <label data-name="profession">
-    <div data-is-label>Profession:</div>
+    <div data-label>Profession:</div>
     <select name="profession" disabled={isFormSubmitting} use:useFieldElement>
       <option value=""></option>
       <option value="painter">Painter</option>
@@ -83,7 +83,7 @@
   </label>
 
   <label data-name="bio">
-    <div data-is-label>Bio:</div>
+    <div data-label>Bio:</div>
     <textarea
       name="bio"
       disabled={isFormSubmitting}
@@ -95,9 +95,9 @@
   </label>
 
   <div data-name="sex">
-    <div data-is-label>Sex:</div>
+    <div data-label>Sex:</div>
     <label>
-      <div data-is-label>Female:</div>
+      <div data-label>Female:</div>
       <input
         type="radio"
         name="sex"
@@ -107,7 +107,7 @@
       />
     </label>
     <label>
-      <div data-is-label>Male:</div>
+      <div data-label>Male:</div>
       <input
         type="radio"
         name="sex"
@@ -122,7 +122,7 @@
   </div>
 
   <label data-name="is_married">
-    <div data-is-label>Marriage:</div>
+    <div data-label>Marriage:</div>
     <input
       type="checkbox"
       name="is_married"
@@ -135,9 +135,9 @@
   </label>
 
   <div data-name="favourite_pets">
-    <div data-is-label>Favourite Pets:</div>
+    <div data-label>Favourite Pets:</div>
     <label>
-      <div data-is-label>Dogs:</div>
+      <div data-label>Dogs:</div>
       <input
         type="checkbox"
         name="favourite_pets"
@@ -147,7 +147,7 @@
       />
     </label>
     <label>
-      <div data-is-label>Cats:</div>
+      <div data-label>Cats:</div>
       <input
         type="checkbox"
         name="favourite_pets"
@@ -157,7 +157,7 @@
       />
     </label>
     <label>
-      <div data-is-label>Parrots:</div>
+      <div data-label>Parrots:</div>
       <input
         type="checkbox"
         name="favourite_pets"
@@ -167,7 +167,7 @@
       />
     </label>
     <label>
-      <div data-is-label>Cows:</div>
+      <div data-label>Cows:</div>
       <input
         type="checkbox"
         name="favourite_pets"

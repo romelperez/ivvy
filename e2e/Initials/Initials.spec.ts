@@ -3,14 +3,12 @@ import Component from './Initials.svelte'
 
 test('should be initially is untouched', async ({ mount }) => {
   const component = await mount(Component)
-  const stat = component.locator('[data-stat-istouched]')
-  await expect(stat).toHaveText('touched: no')
+  await expect(component.locator('[data-stat-istouched]')).toHaveText('touched: no')
 })
 
 test('should be initially validated', async ({ mount }) => {
   const component = await mount(Component)
-  const stat = component.locator('[data-stat-isvalid]')
-  await expect(stat).toHaveText('valid: no')
+  await expect(component.locator('[data-stat-isvalid]')).toHaveText('valid: no')
 })
 
 test('should not show invalid field error if untouched', async ({ mount }) => {
