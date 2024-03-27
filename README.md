@@ -10,6 +10,9 @@
 
 Svelte form manager with dynamic type safe validators and i18n/l10n support.
 
+[Yrel](https://github.com/romelperez/yrel) is used for data validation and
+[Ukti](https://github.com/romelperez/ukti) for error reports l10n and i18n.
+
 ## Install
 
 For any ESM and CommonJS JavaScript environment. Svelte 4 is required.
@@ -19,8 +22,8 @@ If TypeScript is used, version 4.5+ is required.
 npm i ivvy
 ```
 
-[Yrel](https://github.com/romelperez/yrel) can be used for dynamic validations and
-[Ukti](https://github.com/romelperez/ukti) for error reports l10n and i18n.
+[Yrel](https://github.com/romelperez/yrel) and [Ukti](https://github.com/romelperez/ukti)
+as peer dependencies.
 
 ```bash
 npm i yrel ukti
@@ -42,7 +45,7 @@ to define validators and error translations.
     age: y.number().gte(18).lte(150).nullable()
   })
 
-  type Data = InferYrel<typeof schema>
+  type FormData = InferYrel<typeof schema>
 
   const translations: IvvyManagerPropsTranslations = {
     en: {
@@ -55,13 +58,13 @@ to define validators and error translations.
     }
   }
 
-  const manager = createIvvyManager<Data>({
+  const manager = createIvvyManager<FormData>({
     initialData: {
       name: 'Ivvy',
       age: 21
     },
     formatters: {
-      age: (value) => !Number.isFinite(+value) ? null : +value
+      age: (value) => (Number.isFinite(value) ? Number(value) : null)
     },
     validators: schema,
     translations,
@@ -91,16 +94,14 @@ to define validators and error translations.
 </form>
 ```
 
-The [Yrel](https://github.com/romelperez/yrel) schema can be reused in Node.js APIs
-or multiple forms.
-
-The [Ukti](https://github.com/romelperez/ukti) translations are optional but would
-provide a better user experience.
+The Ivvy form manager or just the [Yrel](https://github.com/romelperez/yrel) schema
+can be reused in multiple environments or multiple forms. The
+[Ukti](https://github.com/romelperez/ukti) translations are optional.
 
 ## Form Data
 
-The manager form data has to be an object and each property representing a form field.
-Each field can be of any kind of data.
+The manager form data can be an object and each property representing a form field
+with any kind of data.
 
 The initial data object has to have all the properties. They can be `undefined` / `null`.
 
@@ -117,7 +118,6 @@ const manager = createIvvyManager<FormData>({
     name: null,
     age: null
   }
-  // ...
 })
 ```
 
@@ -126,6 +126,9 @@ const manager = createIvvyManager<FormData>({
 The form data validators have to be explicitely defined for each object property.
 
 The validators can be defined using [Yrel](https://github.com/romelperez/yrel) schema validations.
+
+Every time there is a validation there is an manager `data` update with the possibly
+new validation data transformation. e.g. Yrel data transformations.
 
 ```ts
 import { createIvvyManager } from 'ivvy'
@@ -143,7 +146,7 @@ const manager = createIvvyManager<FormData>({
     name: 'Ivvy',
     age: 21
   },
-  validators: schema.shape
+  validators: schema
 })
 ```
 
@@ -238,12 +241,8 @@ const manager = createIvvyManager<FormData>({
   formatters: {
     // Make all text uppercase.
     name: (value) => String(value).toUpperCase(),
-    // Make it `null` if not a valid input number.
-    age: (value) => (isNaN(Number(value)) ? null : Number(value))
-  },
-  validators: {
-    name: () => true,
-    age: () => true
+    // Make it `null` if not a valid number.
+    age: (value) => (Number.isFinite(value) ? Number(value) : null)
   }
 })
 ```
@@ -254,9 +253,8 @@ const manager = createIvvyManager<FormData>({
 in combination with [Yrel](https://github.com/romelperez/yrel) schema validators reports.
 
 ```ts
-import { createIvvyManager } from 'ivvy'
+import { type IvvyManagerPropsTranslations, createIvvyManager } from 'ivvy'
 import { type InferYrel, y } from 'yrel'
-import type { UktiTranslations } from 'ukti'
 
 const schema = y.object({
   name: y.string().min(2).max(20),
@@ -265,7 +263,7 @@ const schema = y.object({
 
 type FormData = InferYrel<typeof schema>
 
-const translations: UktiTranslations<YrelErrorTranslations> = {
+const translations: IvvyManagerPropsTranslations = {
   en: {
     err_number: 'A valid number is required.',
     err_number_gte: 'This number should be at least {{gte}}.',
@@ -273,8 +271,7 @@ const translations: UktiTranslations<YrelErrorTranslations> = {
     err_string: 'A valid text is required.',
     err_string_min: 'This field should have at least {{min}} character{{min === 1 ? "" : "s"}}.',
     err_string_max: 'This field should have at most {{max}} character{{max === 1 ? "" : "s"}}.'
-    // ...
-  } as Record<keyof YrelErrorTranslations, string>,
+  }
   es: {
     err_number: 'Un número válido es requerido.',
     err_number_gte: 'El número debe ser al menos {{gte}}.',
@@ -282,8 +279,7 @@ const translations: UktiTranslations<YrelErrorTranslations> = {
     err_string: 'Un texto válido es requerido.',
     err_string_min: 'El texto debe tener al menos {{min}} carácteres{{min === 1 ? "" : "s"}}.',
     err_string_max: 'El texto debe tener por mucho {{max}} carácteres{{max === 1 ? "" : "s"}}.'
-    // ...
-  } as Record<keyof YrelErrorTranslations, string>
+  }
 }
 
 const manager = createIvvyManager<FormData>({
@@ -291,8 +287,8 @@ const manager = createIvvyManager<FormData>({
     name: 'Ivvy',
     age: 21
   },
-  validators: schema.shape,
-  locale: 'en',
+  validators: schema,
+  language: 'en', // Defaults to 'en'.
   translations
 })
 ```
@@ -307,7 +303,7 @@ Create a form manager with the provided settings.
 
 The initial form data. All fields are required. They can be `undefined` / `null`.
 
-#### `IvvyManagerProps<Data>.validators: { [P in keyof Data]: YrelSchema<Data[P]> | ((data: Data) => true | string[] | YrelSchema<Data[P]>) }`
+#### `IvvyManagerProps<Data>.validators: YrelSchema<Data> | { [P in keyof Data]: YrelSchema<Data[P]> | ((data: Data) => true | string[] | YrelSchema<Data[P]>) }`
 
 Each data field validator are required. They can be Yrel schema validators or
 basic functions returning `true` or an array of string error messages `string[]`.
@@ -320,16 +316,16 @@ Optional data fields formatters.
 
 Prevent default form submit functionalities.
 
-#### `IvvyManagerProps<Data>.cleanInputFileValue?: boolean`
+#### `IvvyManagerProps<Data>.cleanInputFileValue?: boolean = true`
 
 Remove the value of input type file after change event. This will allow the user
 to re-select the same files if necessary.
 
-#### `IvvyManagerProps<Data>.translations?: Partial<Record<UktiLocales, Partial<Record<keyof YrelErrorTranslations | (string & {}), string>>>>`
+#### `IvvyManagerProps<Data>.translations?: IvvyManagerPropsTranslations`
 
 The translations for the error messages.
 
-#### `IvvyManagerProps<Data>.locale?: UktiLocales = 'en'`
+#### `IvvyManagerProps<Data>.language?: UktiLanguages = 'en'`
 
 Any [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) locale/language
 code to use from the `translations` provided.
