@@ -1,4 +1,3 @@
-import { get } from 'svelte/store'
 import type { UktiLanguages } from 'ukti'
 import type { IvvyLanguageDefault, IvvyUseHookOutput, IvvyManagerState } from '../types.js'
 
@@ -14,12 +13,12 @@ const createUseFormElement = <
       throw new Error('Ivvy manager "useFormElement" was not provided a valid <form/> element.')
     }
 
-    if (get(state.formElement)) {
+    if (state.formElement.get()) {
       throw new Error('Ivvy manager already has an existing form configured.')
     }
 
     const onFormSubmit = (event: Event): void => {
-      const { initialData, preventSubmit, onSubmit } = get(state.props)
+      const { initialData, preventSubmit, onSubmit } = state.props.get()
 
       if (preventSubmit === 'always') {
         event.preventDefault()
@@ -33,8 +32,8 @@ const createUseFormElement = <
       state.isTouched.set(true)
       state.touches.set(touchesInitial)
 
-      if (get(state.isValid)) {
-        onSubmit?.(Object.freeze(get(state.data)), event)
+      if (state.isValid.get()) {
+        onSubmit?.(Object.freeze(state.data.get()), event)
       } else {
         if (preventSubmit === 'onError') {
           event.preventDefault()
@@ -42,7 +41,7 @@ const createUseFormElement = <
 
         // Focus first element with error.
 
-        const errors = get(state.errors)
+        const errors = state.errors.get()
         const [firstErrorKey] = Object.keys(errors)
         const firstErrorElement = formElement.querySelector<HTMLInputElement>(
           `[name="${firstErrorKey}"]`
@@ -61,8 +60,8 @@ const createUseFormElement = <
     const destroy = (): void => {
       state.formElement.set(null)
 
-      state.domListeners.update((domListeners) =>
-        domListeners.filter(([element, eventName, listener]) => {
+      state.domListeners.set(
+        state.domListeners.get().filter(([element, eventName, listener]) => {
           if (element === formElement) {
             formElement.removeEventListener(eventName, listener)
           }
@@ -75,10 +74,7 @@ const createUseFormElement = <
 
     formElement.addEventListener('submit', onFormSubmit)
 
-    state.domListeners.update((domListeners) => [
-      ...domListeners,
-      [formElement, 'submit', onFormSubmit]
-    ])
+    state.domListeners.set([...state.domListeners.get(), [formElement, 'submit', onFormSubmit]])
 
     return { destroy }
   }

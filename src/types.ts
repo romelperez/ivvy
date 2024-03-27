@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-import type { Writable } from 'svelte/store'
 import type { YrelErrorTranslations, YrelSchema } from 'yrel'
 import type { UktiLanguages } from 'ukti'
 
@@ -18,6 +17,12 @@ export interface IvvyUseHookOutput {
 }
 
 export type IvvyLanguageDefault = 'en'
+
+export type IvvyWritable<Data> = {
+  get: () => Data
+  set: (data: Data) => void
+  subscribe: (observer: (data: Data) => void) => () => void
+}
 
 export type IvvyManagerFieldsData<Data extends Record<string, unknown>> = Readonly<Data>
 
@@ -110,38 +115,38 @@ export type IvvyManagerState<
   Languages extends string = UktiLanguages,
   LanguageDefault extends string = IvvyLanguageDefault
 > = {
-  props: Writable<IvvyManagerPropsInternal<Data, Languages, LanguageDefault>>
-  domListeners: Writable<Array<[HTMLElement, string, (event: Event) => void]>>
-  fieldsElements: Writable<Partial<Record<keyof Data, IvvyFieldElement[]>>>
-  formElement: Writable<HTMLFormElement | null>
+  props: IvvyWritable<IvvyManagerPropsInternal<Data, Languages, LanguageDefault>>
+  domListeners: IvvyWritable<Array<[HTMLElement, string, (event: Event) => void]>>
+  fieldsElements: IvvyWritable<Partial<Record<keyof Data, IvvyFieldElement[]>>>
+  formElement: IvvyWritable<HTMLFormElement | null>
   /**
    * The form data directly from the form DOM elements or as provided by the user.
    * This data is after "formatters" and before Yrel validation transformations.
    */
-  sourceData: Writable<IvvyManagerFieldsData<Data>>
+  sourceData: IvvyWritable<IvvyManagerFieldsData<Data>>
   /**
    * If the form "data" is valid.
    */
-  isValid: Writable<boolean>
+  isValid: IvvyWritable<boolean>
   /**
    * The form data after "formatters" and Yrel validation transformations if provided.
    */
-  data: Writable<IvvyManagerFieldsData<Data>>
+  data: IvvyWritable<IvvyManagerFieldsData<Data>>
   /**
    * The form fields if they have errors or not.
    * If a field has an error, it will be a list of message texts.
    * Otherwise, it is undefined.
    */
-  errors: Writable<IvvyManagerFieldsErrors<Data>>
+  errors: IvvyWritable<IvvyManagerFieldsErrors<Data>>
   /**
    * If any of the form elements have been touched by the user.
    * If the form has been submitted at least once, it is also marked as touched.
    */
-  isTouched: Writable<boolean>
+  isTouched: IvvyWritable<boolean>
   /**
    * The form fields if they have been touched or not.
    */
-  touches: Writable<IvvyManagerFieldsTouches<Data>>
+  touches: IvvyWritable<IvvyManagerFieldsTouches<Data>>
 }
 
 export interface IvvyManager<
@@ -152,26 +157,26 @@ export interface IvvyManager<
   /**
    * If the form "data" is valid.
    */
-  isValid: Writable<boolean>
+  isValid: IvvyWritable<boolean>
   /**
    * The form data after "formatters" and Yrel validation transformations if provided.
    */
-  data: Writable<IvvyManagerFieldsData<Data>>
+  data: IvvyWritable<IvvyManagerFieldsData<Data>>
   /**
    * The form fields if they have errors or not.
    * If a field has an error, it will be a list of message texts.
    * Otherwise, it is undefined.
    */
-  errors: Writable<IvvyManagerFieldsErrors<Data>>
+  errors: IvvyWritable<IvvyManagerFieldsErrors<Data>>
   /**
    * If any of the form elements have been touched by the user.
    * If the form has been submitted at least once, it is also marked as touched.
    */
-  isTouched: Writable<boolean>
+  isTouched: IvvyWritable<boolean>
   /**
    * The form fields if they have been touched or not.
    */
-  touches: Writable<IvvyManagerFieldsTouches<Data>>
+  touches: IvvyWritable<IvvyManagerFieldsTouches<Data>>
   /**
    * Update the props partially.
    */

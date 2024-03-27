@@ -1,4 +1,3 @@
-import { get } from 'svelte/store'
 import type { UktiLanguages } from 'ukti'
 import type {
   IvvyLanguageDefault,
@@ -17,7 +16,7 @@ const createUseFieldElement = <
   state: IvvyManagerState<Data, Languages, LanguageDefault>
 ): ((element: IvvyFieldElement) => IvvyUseHookOutput) => {
   return (element) => {
-    const { initialData } = get(state.props)
+    const { initialData } = state.props.get()
     const name = element.getAttribute('name') as keyof Data
 
     if (!Object.keys(initialData).includes(name as string)) {
@@ -26,12 +25,12 @@ const createUseFieldElement = <
       )
     }
 
-    const dataCurrent = get(state.data)
-    const fieldsElements = get(state.fieldsElements)
+    const dataCurrent = state.data.get()
+    const fieldsElements = state.fieldsElements.get()
     const fieldElementsCurrent = fieldsElements[name]
     const fieldElementsNew = fieldElementsCurrent ? [...fieldElementsCurrent, element] : [element]
 
-    state.fieldsElements.update((value) => ({ ...value, [name]: fieldElementsNew }))
+    state.fieldsElements.set({ ...state.fieldsElements.get(), [name]: fieldElementsNew })
 
     setFieldElementValue(fieldElementsNew, dataCurrent[name])
 
@@ -46,8 +45,8 @@ const createUseFieldElement = <
       element instanceof HTMLSelectElement
 
     const onUpdate = (): void => {
-      const { cleanInputFileValue, formatters } = get(state.props)
-      const data = get(state.data)
+      const { cleanInputFileValue, formatters } = state.props.get()
+      const data = state.data.get()
       const valueRaw = getFieldElementValue(element, data[name])
 
       // After input file has selected some files, reset the value
@@ -59,25 +58,24 @@ const createUseFieldElement = <
       const fieldFormatter = formatters?.[name]
       const value = fieldFormatter ? fieldFormatter(valueRaw, data) : valueRaw
 
-      state.sourceData.update((data) => Object.freeze({ ...data, [name]: value }))
+      state.sourceData.set(Object.freeze({ ...state.sourceData.get(), [name]: value }))
     }
 
     const onTouch = (): void => {
       state.isTouched.set(true)
-      state.touches.update((touches) => Object.freeze({ ...touches, [name]: true }))
+      state.touches.set(Object.freeze({ ...state.touches.get(), [name]: true }))
     }
 
     const destroy = (): void => {
-      state.fieldsElements.update((fieldsElements) => {
-        const fieldElement = fieldsElements[name]
-        fieldsElements[name] = fieldElement
-          ? fieldElement.filter((item) => item !== element)
-          : undefined
-        return { ...fieldsElements }
-      })
+      const fieldsElements = state.fieldsElements.get()
+      const fieldElement = fieldsElements[name]
+      fieldsElements[name] = fieldElement
+        ? fieldElement.filter((item) => item !== element)
+        : undefined
+      state.fieldsElements.set({ ...fieldsElements })
 
-      state.domListeners.update((domListeners) =>
-        domListeners.filter(([itemElement, eventName, listener]) => {
+      state.domListeners.set(
+        state.domListeners.get().filter(([itemElement, eventName, listener]) => {
           if (itemElement === element) {
             element.removeEventListener(eventName, listener)
           }
@@ -90,8 +88,8 @@ const createUseFieldElement = <
       element.addEventListener('change', onUpdate)
       element.addEventListener('change', onTouch)
 
-      state.domListeners.update((values) => [
-        ...values,
+      state.domListeners.set([
+        ...state.domListeners.get(),
         [element, 'change', onUpdate],
         [element, 'change', onTouch]
       ])
@@ -99,8 +97,8 @@ const createUseFieldElement = <
       element.addEventListener('input', onUpdate)
       element.addEventListener('input', onTouch)
 
-      state.domListeners.update((values) => [
-        ...values,
+      state.domListeners.set([
+        ...state.domListeners.get(),
         [element, 'input', onUpdate],
         [element, 'input', onTouch]
       ])
@@ -109,8 +107,8 @@ const createUseFieldElement = <
       element.addEventListener('change', onUpdate)
       element.addEventListener('change', onTouch)
 
-      state.domListeners.update((values) => [
-        ...values,
+      state.domListeners.set([
+        ...state.domListeners.get(),
         [element, 'input', onUpdate],
         [element, 'change', onUpdate],
         [element, 'change', onTouch]

@@ -1,4 +1,3 @@
-import { get } from 'svelte/store'
 import { type YrelErrorTranslations, type YrelSchema, isYrel, validateYrel } from 'yrel'
 import { type UktiLanguages, type UktiTranslations, createUktiTranslator } from 'ukti'
 
@@ -21,8 +20,8 @@ const createFormValidator = <
   state: IvvyManagerState<Data, Languages, LanguageDefault>
 ): (() => void) => {
   return (): void => {
-    const { validators, language, translations } = get(state.props)
-    const dataNew: ObjectWriteable<Data> = { ...get(state.sourceData) }
+    const { validators, language, translations } = state.props.get()
+    const dataNew: ObjectWriteable<Data> = { ...state.sourceData.get() }
 
     const createMapErrorMessage = (): ((msg: string, vars?: unknown) => string) => {
       if (translations) {

@@ -8,15 +8,16 @@
 [![github stars](https://img.shields.io/github/stars/romelperez/ivvy.svg?style=social&label=stars)](https://github.com/romelperez/ivvy)
 [![license](https://img.shields.io/github/license/romelperez/ivvy.svg)](https://github.com/romelperez/ivvy/blob/main/LICENSE)
 
-Svelte form manager with dynamic type safe validators and i18n/l10n support.
+Form manager with dynamic type safe validators and i18n/l10n support.
+
+It works out-of-the-box with Svelte 4 due to its simple API.
 
 [Yrel](https://github.com/romelperez/yrel) is used for data validation and
 [Ukti](https://github.com/romelperez/ukti) for error reports l10n and i18n.
 
 ## Install
 
-For any ESM and CommonJS JavaScript environment. Svelte 4 is required.
-If TypeScript is used, version 4.5+ is required.
+For any ESM and CommonJS JavaScript environment. If TypeScript is used, version 4.5+ is required.
 
 ```bash
 npm i ivvy

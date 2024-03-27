@@ -4,15 +4,15 @@
   "publishConfig": {
     "access": "public"
   },
-  "description": "Svelte form manager with dynamic type safe validators and i18n/l10n support.",
+  "description": "Form manager with dynamic type safe validators and i18n/l10n support.",
   "keywords": [
     "typescript",
-    "svelte",
-    "sveltekit",
     "form-validation",
     "form-management",
     "l10n",
-    "i18n"
+    "i18n",
+    "svelte",
+    "sveltekit"
   ],
   "homepage": "https://github.com/romelperez/ivvy",
   "repository": {
@@ -35,7 +35,6 @@
   "module": "./build/esm/index.js",
   "main": "./build/cjs/index.js",
   "peerDependencies": {
-    "svelte": "4",
     "ukti": "4",
     "yrel": "2"
   },
